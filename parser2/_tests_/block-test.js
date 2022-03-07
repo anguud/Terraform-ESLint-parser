@@ -20,7 +20,7 @@ module.exports = test => {
                             },
                         },
                         {
-                            type: 'ExpressionStatemnet',
+                            type: 'ExpressionStatement',
                             expression: {
                                 type: 'StringLiteral',
                                 value: 'Hello',
