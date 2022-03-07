@@ -16,9 +16,8 @@ const tests = [
  * For Manual tests
  */
 function exec() {
-    console
-    const program = `   
-        2;
+    const program = `
+        2 + 2;
         4;
         {
             "hello";
@@ -31,7 +30,6 @@ function exec() {
     const ast = parser.parse(program);
     
     console.log(JSON.stringify(ast, null, 2));
-    console.log(ast);
 }
 
 // Manual test:

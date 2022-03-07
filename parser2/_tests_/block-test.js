@@ -1,13 +1,10 @@
 module.exports = test => {
     test(
         `
-        
         {
             42;
-            
             "Hello";
         }
-        
     `,
         {
             type: 'Program',
@@ -22,7 +19,6 @@ module.exports = test => {
                                 value: 42,
                             },
                         },
-
                         {
                             type: 'ExpressionStatemnet',
                             expression: {

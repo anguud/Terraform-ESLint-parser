@@ -1,7 +1,7 @@
 module.exports = test => {
     test(
         `
-        "Hello;
+        "Hello";
 
         42;
 
