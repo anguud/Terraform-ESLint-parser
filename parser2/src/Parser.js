@@ -169,7 +169,7 @@ class Parser {
 
     while (this._lookahead.type === operatorToken) {
       // operator: *, /
-      const operator = this._eat('operatorToken').value;
+      const operator = this._eat(operatorToken).value;
 
       const right = this[builderName]();
 
@@ -207,7 +207,7 @@ class Parser {
       case '(': 
         return this.ParentesizedExpression();
       default:    
-      return this.Literal();
+        return this.Literal();
     }
   }
 
