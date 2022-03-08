@@ -137,7 +137,7 @@ class Parser {
    AssignmentExpression() {
      const left = this.AdditiveExpression();
 
-     if (this._isAssignmentOperator(this._lookahead.type)) {
+     if (!this._isAssignmentOperator(this._lookahead.type)) {
        return left;
      }
 
