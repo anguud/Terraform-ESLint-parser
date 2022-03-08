@@ -17,8 +17,11 @@ const tests = [
  */
 function exec() {
     const program = `
-    5 + 3 * 2 + 3 / 3 * 3;
-    `;
+    {
+        42;
+        "Hello";
+    }
+`;
 
     const ast = parser.parse(program);
     
