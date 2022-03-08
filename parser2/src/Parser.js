@@ -66,6 +66,10 @@ class Parser {
         return this.EmptyStatement()
       case '{':
         return this.BlockStatement();
+      case 'resource':
+        return this.ResourceBlockStatement();
+      case 'STRING': 
+        return this.StringLiteral();
       default:
         return this.ExpressionStatement();
     }
@@ -100,6 +104,31 @@ class Parser {
        body,
      };
    }
+
+  /**
+   * ResourceBlockStatement
+   *  : 'Resource StringLiteral StringLiteral{' optStatementList '}'
+   *  ;
+   */
+   ResourceBlockStatement() {
+    this._eat('resource');
+    const blocklabel = this._lookahead.type == this.StringLiteral; 
+    //next
+    const blocklabel2 = this._lookahead.type == this.StringLiteral;
+
+    const body = this._lookahead.type !== '}' ? this.StatementList('}') : [];
+
+    this._eat('}');
+
+    return {
+      type: 'ResourceBlockStatement',
+      blocklabel,
+      blocklabel2,
+      body,
+    };
+  }
+
+
 
   /**
    * ExpressionStatement
@@ -222,6 +251,23 @@ class Parser {
     this._eat(')');
     return expression;
   }
+
+   /**
+   * AssignmentExpression
+   *  : Expression '='
+   *  ;
+   * 
+   */
+    AssignmentExpression() {
+      const expression = this.Expression();
+      this._eat('=');
+      return {
+        type: 'AssignmentExpression',
+        expression,
+      };
+    }
+
+
 
   /** 
    * StringLiteral 
