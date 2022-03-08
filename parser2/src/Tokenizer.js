@@ -22,14 +22,35 @@ const Spec = [
     [/^\)/, ')'],
 
     // ----------------
-    // Math operators: +, -, * /
-    [/^[+\-]/, 'ADDITIVE_OPERATOR'],
-    [/^[*\/]/, 'MULTIPLICATIVE_OPERATOR'],
-
-    // ----------------
-    //Numbers:
+    //Numbers: 
+    // Numbers should be before identifiers 
+    // since the w+ in identifiers also will match on numbers
 
     [/^\d+/, 'NUMBER'],
+
+    // ----------------
+    // Resource
+
+    [/^resource/,'resource'],
+
+    // ----------------
+    // Identifiers:
+
+    [/^\w+/, 'IDENTIFIER'],
+
+    // ----------------
+    // Assignment operators =, *=, /=, +=, -=,
+
+    [/^=/, 'SIMPLE_ASSIGN'],
+    [/^[\*\/\+\-]=/, 'COMPLESX_ASSIGN'],
+
+    // ----------------
+    // Math operators: +, -, * /
+    [/^[+\-]/, 'ADDITIVE_OPERATOR'],
+    // TODO: parser does not support multiplication over division. 
+    [/^[*\/]/, 'MULTIPLICATIVE_OPERATOR'], 
+
+
 
     // ----------------
     // Strings
