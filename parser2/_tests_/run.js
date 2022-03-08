@@ -17,11 +17,7 @@ const tests = [
  */
 function exec() {
     const program = `
-    {
-        42;
-        "Hello";
-    }
-    "test done";
+    3;
     `;
 
     const ast = parser.parse(program);
