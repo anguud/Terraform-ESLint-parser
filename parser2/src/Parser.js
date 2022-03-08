@@ -69,8 +69,6 @@ class Parser {
         return this.BlockStatement();
       case 'resource':
         return this.ResourceBlockStatement();
-      case 'STRING': 
-        return this.StringLiteral();
       default:
         return this.ExpressionStatement();
     }
@@ -203,7 +201,7 @@ class Parser {
     * Extra check whether it's valid assignment target.
     */
    _chekValidAssignmentTarget(node) {
-     if (node.type === 'Identifyer') {
+     if (node.type === 'Identifier') {
        return node;
      }
      throw new SyntaxError('Invalid left-hand side in assignment expression');
@@ -348,7 +346,7 @@ class Parser {
    *  ;
    * 
    */
-    AssignmentExpression() {
+    AssignmentExpressionx() {
       const expression = this.Expression();
       this._eat('=');
       return {
@@ -385,18 +383,18 @@ class Parser {
     };
   }
 
-    /**
-   * Identifier
-   * : Identifier
-   * ;
-  */
-     Identifyer() {
-      const token = this._eat('IDENTIFIER');
-      return {
-        type: 'Identifier',
-        value: token.value.slice(1, -1)
-      };
-    }
+  //   /**
+  //  * Identifier
+  //  * : Identifier
+  //  * ;
+  // */
+  //    Identifier() {
+  //     const token = this._eat('IDENTIFIER');
+  //     return {
+  //       type: 'Identifier',
+  //       value: token.value.slice(1, -1)
+  //     };
+  //   }
   
 
 

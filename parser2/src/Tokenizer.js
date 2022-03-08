@@ -29,6 +29,11 @@ const Spec = [
     [/^\d+/, 'NUMBER'],
 
     // ----------------
+    // Resource
+
+    [/^resource/,'resource'],
+
+    // ----------------
     // Identifiers:
 
     [/^\w+/, 'IDENTIFIER'],
@@ -38,6 +43,7 @@ const Spec = [
 
     [/^=/, 'SIMPLE_ASSIGN'],
     [/^[\*\/\+\-]=/, 'COMPLESX_ASSIGN'],
+
     // ----------------
     // Math operators: +, -, * /
     [/^[+\-]/, 'ADDITIVE_OPERATOR'],
@@ -51,19 +57,6 @@ const Spec = [
 
     [/^"[^"]*"/, 'STRING'],
     [/^'[^']*'/, 'STRING'],
-
-
-    // ----------------
-    // Resource
-
-    [/resource/,'resource'],
-
-    // ----------------
-    // Identifier
-
-    [/^\W+/, 'IDENTIFIER'],
-
-
 ];
 
 
