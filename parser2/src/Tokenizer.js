@@ -51,6 +51,19 @@ const Spec = [
 
     [/^"[^"]*"/, 'STRING'],
     [/^'[^']*'/, 'STRING'],
+
+
+    // ----------------
+    // Resource
+
+    [/resource/,'resource'],
+
+    // ----------------
+    // Identifier
+
+    [/^\W+/, 'IDENTIFIER'],
+
+
 ];
 
 
