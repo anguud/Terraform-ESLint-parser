@@ -26,6 +26,11 @@ const Spec = [
     [/^[+\-]/, 'ADDITIVE_OPERATOR'],
     [/^[*\/]/, 'MULTIPLICATIVE_OPERATOR'],
 
+
+    // ----------------
+    //Assignments:
+    [/^[*\=]/, 'ASSIGNMENT_OPERATOR'],
+
     // ----------------
     //Numbers:
 
@@ -42,6 +47,12 @@ const Spec = [
     // Resource
 
     [/resource/,'resource'],
+
+    // ----------------
+    // Identifier
+
+    [/^\W+/, 'IDENTIFIER'],
+
 
 ];
 

@@ -112,13 +112,12 @@ class Parser {
    */
    ResourceBlockStatement() {
     this._eat('resource');
-    const blocklabel = this._lookahead.type == this.StringLiteral; 
+    const blocklabel = this._lookahead.type == 'STRING' ? this.StringLiteral() : []; 
     //next
-    const blocklabel2 = this._lookahead.type == this.StringLiteral;
+    const blocklabel2 = this._lookahead.type == 'STRING' ? this.StringLiteral() : [];
 
     const body = this._lookahead.type !== '}' ? this.StatementList('}') : [];
 
-    this._eat('}');
 
     return {
       type: 'ResourceBlockStatement',
@@ -268,7 +267,6 @@ class Parser {
     }
 
 
-
   /** 
    * StringLiteral 
    *  :STRING
@@ -295,6 +293,20 @@ class Parser {
       value: Number(token.value)
     };
   }
+
+    /**
+   * Identifier
+   * : Identifier
+   * ;
+  */
+     Identifyer() {
+      const token = this._eat('IDENTIFIER');
+      return {
+        type: 'Identifier',
+        value: token.value.slice(1, -1)
+      };
+    }
+  
 
 
   _eat(tokenType) {

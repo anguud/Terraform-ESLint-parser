@@ -17,13 +17,11 @@ const tests = [
  */
 function exec() {
     const program = `
-    resource "google_compute_ssl_policy" "vulnerable_example" {
-        name            = "production-ssl-policy"
-        profile         = "MODERN"
-        min_tls_version = "TLS_1_0"
+    {
+        42;
+        "Hello";
     }
-    "test done"
-    `;
+`;
 
     const ast = parser.parse(program);
     
