@@ -1,5 +1,5 @@
 
-const { timingSafeEqual } = require('crypto');
+
 const {Tokenizer} = require('./Tokenizer')
 
 class Parser {
