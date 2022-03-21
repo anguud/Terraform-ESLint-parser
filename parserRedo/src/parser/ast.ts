@@ -1,11 +1,20 @@
-import type { Token, Comment } from "../types"
+import type { AST } from "eslint"
+import type { Comment as ESTreeComment } from "estree"
+export interface RuleListener {
+    [key: string]: (node: never) => void
+}
+
+export type Token = AST.Token
+export type Comment = ESTreeComment
+
 
 export interface Locations {
     loc: SourceLocation
     range: [number, number]
 }
 
-interface BaseJSONNode extends Locations {
+//All nodes have type, range, loc and parent properties according to ESLint 
+interface BasicNode extends Locations {
     type: string
 }
 
@@ -21,105 +30,106 @@ export interface Position {
     column: number
 }
 
-export type JSONNode =
-    | JSONProgram
-    | JSONExpressionStatement
-    | JSONExpression
-    | JSONProperty
-    | JSONIdentifier
-    | JSONTemplateLiteral
-    | JSONTemplateElement
-export interface JSONProgram extends BaseJSONNode {
+export type TFNode =
+    | TFProgram
+    | TFExpressionStatement
+    | TFExpression
+    | TFProperty
+    | TFIdentifier
+    | TFTemplateLiteral
+    | TFTemplateElement
+
+export interface TFProgram extends BasicNode {
     type: "Program"
-    body: [JSONExpressionStatement]
+    body: [TFExpressionStatement]
     comments: Comment[]
     tokens: Token[]
     parent: null
 }
 
-export interface JSONExpressionStatement extends BaseJSONNode {
-    type: "JSONExpressionStatement"
-    expression: JSONExpression
-    parent: JSONProgram
+export interface TFExpressionStatement extends BasicNode {
+    type: "TFExpressionStatement"
+    expression: TFExpression
+    parent: TFProgram
 }
 
-export type JSONExpression =
-    | JSONArrayExpression
-    | JSONObjectExpression
-    | JSONLiteral
-    | JSONUnaryExpression
-    | JSONNumberIdentifier
-    | JSONUndefinedIdentifier
-    | JSONTemplateLiteral
-    | JSONBinaryExpression
+export type TFExpression =
+    | TFArrayExpression
+    | TFObjectExpression
+    | TFLiteral
+    | TFUnaryExpression
+    | TFNumberIdentifier
+    | TFUndefinedIdentifier
+    | TFTemplateLiteral
+    | TFBinaryExpression
 
-export interface JSONArrayExpression extends BaseJSONNode {
-    type: "JSONArrayExpression"
-    elements: (JSONExpression | null)[]
-    parent: JSONArrayExpression | JSONProperty | JSONExpressionStatement
+export interface TFArrayExpression extends BasicNode {
+    type: "TFArrayExpression"
+    elements: (TFExpression | null)[]
+    parent: TFArrayExpression | TFProperty | TFExpressionStatement
 }
 
-export interface JSONObjectExpression extends BaseJSONNode {
-    type: "JSONObjectExpression"
-    properties: JSONProperty[]
-    parent: JSONArrayExpression | JSONProperty | JSONExpressionStatement
+export interface TFObjectExpression extends BasicNode {
+    type: "TFObjectExpression"
+    properties: TFProperty[]
+    parent: TFArrayExpression | TFProperty | TFExpressionStatement
 }
 
-export interface JSONProperty extends BaseJSONNode {
-    type: "JSONProperty"
-    key: JSONIdentifier | JSONStringLiteral | JSONNumberLiteral
-    value: JSONExpression
+export interface TFProperty extends BasicNode {
+    type: "TFProperty"
+    key: TFIdentifier | TFStringLiteral | TFNumberLiteral
+    value: TFExpression
     kind: "init"
     method: false
     shorthand: false
     computed: false
-    parent: JSONObjectExpression
+    parent: TFObjectExpression
 }
 
-export interface JSONIdentifier extends BaseJSONNode {
-    type: "JSONIdentifier"
+export interface TFIdentifier extends BasicNode {
+    type: "TFIdentifier"
     name: string
     parent?:
-        | JSONArrayExpression
-        | JSONProperty
-        | JSONExpressionStatement
-        | JSONUnaryExpression
+    | TFArrayExpression
+    | TFProperty
+    | TFExpressionStatement
+    | TFUnaryExpression
 }
 
-export interface JSONNumberIdentifier extends JSONIdentifier {
+export interface TFNumberIdentifier extends TFIdentifier {
     name: "Infinity" | "NaN"
 }
 
-export interface JSONUndefinedIdentifier extends JSONIdentifier {
+export interface TFUndefinedIdentifier extends TFIdentifier {
     name: "undefined"
 }
-interface JSONLiteralBase extends BaseJSONNode {
-    type: "JSONLiteral"
+interface TFLiteralBase extends BasicNode {
+    type: "TFLiteral"
     raw: string
     parent?:
-        | JSONArrayExpression
-        | JSONProperty
-        | JSONExpressionStatement
-        | JSONUnaryExpression
-        | JSONBinaryExpression
+    | TFArrayExpression
+    | TFProperty
+    | TFExpressionStatement
+    | TFUnaryExpression
+    | TFBinaryExpression
 }
 
-export interface JSONStringLiteral extends JSONLiteralBase {
+export interface TFStringLiteral extends TFLiteralBase {
     value: string
     regex: null
     bigint: null
 }
-export interface JSONNumberLiteral extends JSONLiteralBase {
+export interface TFNumberLiteral extends TFLiteralBase {
     value: number
     regex: null
     bigint: null
 }
-export interface JSONKeywordLiteral extends JSONLiteralBase {
+export interface TFKeywordLiteral extends TFLiteralBase {
     value: boolean | null
     regex: null
     bigint: null
 }
-export interface JSONRegExpLiteral extends JSONLiteralBase {
+export interface TFRegExpLiteral extends TFLiteralBase {
     value: null
     regex: {
         pattern: string
@@ -127,53 +137,53 @@ export interface JSONRegExpLiteral extends JSONLiteralBase {
     }
     bigint: null
 }
-export interface JSONBigIntLiteral extends JSONLiteralBase {
+export interface TFBigIntLiteral extends TFLiteralBase {
     value: null
     regex: null
     bigint: string
 }
 
-export type JSONLiteral =
-    | JSONStringLiteral
-    | JSONNumberLiteral
-    | JSONKeywordLiteral
-    | JSONRegExpLiteral
-    | JSONBigIntLiteral
+export type TFLiteral =
+    | TFStringLiteral
+    | TFNumberLiteral
+    | TFKeywordLiteral
+    | TFRegExpLiteral
+    | TFBigIntLiteral
 
-export interface JSONUnaryExpression extends BaseJSONNode {
-    type: "JSONUnaryExpression"
+export interface TFUnaryExpression extends BasicNode {
+    type: "TFUnaryExpression"
     operator: "-" | "+"
     prefix: true
-    argument: JSONNumberLiteral | JSONNumberIdentifier
-    parent: JSONArrayExpression | JSONProperty | JSONExpressionStatement
+    argument: TFNumberLiteral | TFNumberIdentifier
+    parent: TFArrayExpression | TFProperty | TFExpressionStatement
 }
 
-export interface JSONTemplateLiteral extends BaseJSONNode {
-    type: "JSONTemplateLiteral"
-    quasis: [JSONTemplateElement]
+export interface TFTemplateLiteral extends BasicNode {
+    type: "TFTemplateLiteral"
+    quasis: [TFTemplateElement]
     expressions: []
-    parent: JSONArrayExpression | JSONProperty | JSONExpressionStatement
+    parent: TFArrayExpression | TFProperty | TFExpressionStatement
 }
 
-export interface JSONTemplateElement extends BaseJSONNode {
-    type: "JSONTemplateElement"
+export interface TFTemplateElement extends BasicNode {
+    type: "TFTemplateElement"
     tail: boolean
     value: {
         cooked: string
         raw: string
     }
-    parent: JSONTemplateLiteral
+    parent: TFTemplateLiteral
 }
 
-export interface JSONBinaryExpression extends BaseJSONNode {
-    type: "JSONBinaryExpression"
+export interface TFBinaryExpression extends BasicNode {
+    type: "TFBinaryExpression"
     operator: "-" | "+" | "*" | "/" | "%" | "**"
-    left: JSONNumberLiteral | JSONUnaryExpression | JSONBinaryExpression
-    right: JSONNumberLiteral | JSONUnaryExpression | JSONBinaryExpression
+    left: TFNumberLiteral | TFUnaryExpression | TFBinaryExpression
+    right: TFNumberLiteral | TFUnaryExpression | TFBinaryExpression
     parent:
-        | JSONArrayExpression
-        | JSONProperty
-        | JSONExpressionStatement
-        | JSONUnaryExpression
-        | JSONBinaryExpression
+    | TFArrayExpression
+    | TFProperty
+    | TFExpressionStatement
+    | TFUnaryExpression
+    | TFBinaryExpression
 }
