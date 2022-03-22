@@ -1,5 +1,5 @@
-const { Parser } = require('../src/Parser');
-const assert = require('assert');
+import { Parser } from '../src/Parser';
+import { deepEqual } from 'assert';
 
 const parser = new Parser();
 
@@ -37,7 +37,7 @@ exec()
  */
 function test(program, expected) {
     const ast = parser.parse(program);
-    assert.deepEqual(ast, expected);
+    deepEqual(ast, expected);
 }
 
 // Run all tests:
