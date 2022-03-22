@@ -8,14 +8,7 @@
   "files": [
     "api.js"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/humanwhocodes/momoa.git"
-  },
-  "bugs": {
-    "url": "https://github.com/humanwhocodes/momoa/issues"
-  },
-  "homepage": "https://github.com/humanwhocodes/momoa#readme",
+
   "scripts": {
     "build": "rollup -c",
     "lint": "eslint src/*.js tests/*.js",
