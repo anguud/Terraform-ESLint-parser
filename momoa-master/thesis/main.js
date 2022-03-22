@@ -1,4 +1,4 @@
-import { parse } from "./src/parse.js";
+import { parse } from "../src/parse.js";
 
 const some_json_string =  '{"fruit": "Apple", "size": "Large", "color": "Red"}'; 
 

@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/momoa/momoa/thesis/try.js",
+            "program": "${workspaceFolder}/momoa-master/thesis/main.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]
