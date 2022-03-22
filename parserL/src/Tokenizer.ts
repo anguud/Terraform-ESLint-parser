@@ -1,8 +1,11 @@
-const Spec = [
+const Spec = [    
+
     // ----------------
     // Whitespace
 
     [/^\s+/, null],
+    [/^\\n/, 'NEWLINE'],
+
     
     // ----------------
     // Comments:
@@ -15,6 +18,7 @@ const Spec = [
 
     // ----------------
     // Symbol, delimiters:
+    // [/^, '/n']
     [/^;/, ';'],
     [/^\{/, '{'],
     [/^\}/, '}'],
@@ -62,15 +66,14 @@ const Spec = [
 
 class Tokenizer {
     _cursor: any;
-    _string: string; 
-
+    _string: string;
 
     init (string) {
         this._string = string;
         this._cursor = 0;
     }
 
-    isEOF() {
+    isEOF() { 
         return this._cursor === this._string.length;
     }
 
@@ -122,8 +125,21 @@ class Tokenizer {
         }
         this._cursor += matched[0].length;
         return matched[0];
-     }
+    }
+    
+    getTokens(program) {
+        const tokens = [];
+        const _tokenizer = new Tokenizer()
+        _tokenizer.init(program)
+        let i = 0
+        while (!_tokenizer.isEOF()) {
+            tokens[i] = _tokenizer.getNextToken()
+            i++
+        }
+        return tokens
+    }
 }
+
 
 module.exports = {
     Tokenizer,
