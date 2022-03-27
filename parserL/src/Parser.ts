@@ -1,14 +1,14 @@
-import { Tokenizer } from './Tokenizer';
+// import { Tokenizer } from './Tokenizer';
 
 class Parser {
 
-    _tokenizer: typeof Tokenizer;
-    _string: string; 
-    _lookahead: typeof Tokenizer;
+    _tokenizer;
+    _string; 
+    _lookahead;
 
   constructor() {
     this._string = '';
-    this._tokenizer = new Tokenizer();
+    // this._tokenizer = new Tokenizer();
   }
 
   parse(string) {
