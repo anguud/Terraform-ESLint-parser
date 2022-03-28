@@ -1,8 +1,68 @@
-const Spec = [
+export const SpecMap = [
     // ----------------
     // Whitespace
 
-    [/^\s+/, null],
+    [/\s/, 'WHITESPACE'],
+    
+    // ----------------
+    // Comments:
+
+        // Single line: 
+    [/^\/\/.*/, null],
+
+        // multi-line comments:
+    [/^\/\*[\s\S]*?\*\//, null],
+
+    // ----------------
+    // Symbol, delimiters:
+    [/^;/, ';'],
+    [/^\{/, '{'],
+    [/^\}/, '}'],
+    [/^\(/, '('],
+    [/^\)/, ')'],
+
+    // ----------------
+    //Numbers: 
+    // Numbers should be before identifiers 
+    // since the w+ in identifiers also will match on numbers
+
+    [/^\d+/, 'NUMBER'],
+
+    // ----------------
+    // Resource
+
+    [/^resource/,'resource'],
+
+    // ----------------
+    // Identifiers:
+
+    [/^\w+/, 'IDENTIFIER'],
+
+    // ----------------
+    // Assignment operators =, *=, /=, +=, -=,
+
+    [/^=/, 'SIMPLE_ASSIGN'],
+    [/^[\*\/\+\-]=/, 'COMPLESX_ASSIGN'],
+
+    // ----------------
+    // Math operators: +, -, * /
+    [/^[+\-]/, 'ADDITIVE_OPERATOR'],
+    // TODO: parser does not support multiplication over division. 
+    [/^[*\/]/, 'MULTIPLICATIVE_OPERATOR'], 
+
+
+
+    // ----------------
+    // Strings
+
+    [/^"[^"]*"/, 'STRING'],
+    [/^'[^']*'/, 'STRING'],
+];
+export const Spec = [
+    // ----------------
+    // Whitespace
+
+    [/\s/, null],
     
     // ----------------
     // Comments:

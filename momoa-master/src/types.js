@@ -16,6 +16,14 @@ export const types = {
             type: "String",
             value,
             ...parts
+            
+        };
+    },
+    resource(value, parts = {}) {
+        return {
+            type: "Resource",
+            value,
+            ...parts
         };
     },
     number(value, parts = {}) {

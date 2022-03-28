@@ -71,21 +71,21 @@ export function tokenize(text, options) {
     const tokens = [];
 
 
-    function createToken(tokenType, value, startLoc, endLoc) {
-        
-        const endOffset = startLoc.offset + value.length;
-        let range = options.ranges ? {
-            range: [startLoc.offset, endOffset]
-        } : undefined;
+    function createToken(tokenType, value, startLocation, endLocation) {
+        // endLocation is only parsed to the parameter, if multiline i guess...
+        const endOffset = startLocation.offset + value.length;
+        let range = {
+            range: [startLocation.offset, endOffset]
+        };
         
         return {
             type: tokenType,
-            value,
+            value: value,
             loc: {
-                start: startLoc,
-                end: endLoc || {
-                    line: startLoc.line,
-                    column: startLoc.column + value.length,
+                start: startLocation,
+                end: endLocation || {
+                    line: startLocation.line,
+                    column: startLocation.column + value.length,
                     offset: endOffset
                 }
             },

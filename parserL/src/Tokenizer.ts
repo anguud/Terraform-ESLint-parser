@@ -141,6 +141,6 @@ class Tokenizer {
 }
 
 
-module.exports = {
-    Tokenizer,
+export = {
+    Tokenizer
 }
