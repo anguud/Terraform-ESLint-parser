@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------
 
 import { tokenize } from "./tokens.js";
+// import { Tokenizer } from "../../parserL/src/Tokenizer.ts"; typescript not working
 import { types as t } from "./types.js";
 import { escapeToChar } from "./syntax.js";
 import { UnexpectedToken, ErrorWithLocation } from "./errors.js";
@@ -19,8 +20,8 @@ import { UnexpectedToken, ErrorWithLocation } from "./errors.js";
 
 const DEFAULT_OPTIONS = {
     tokens: false,
-    comments: false,
-    ranges: false
+    comments: true,
+    ranges: true
 };
 
 /**
@@ -130,6 +131,7 @@ export function parse(text, options) {
         ...options
     });
 
+    // const tokens2 = Tokenizer.getTokens(text);
     const tokens = tokenize(text, {
         comments: !!options.comments,
         ranges: !!options.ranges

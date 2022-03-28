@@ -1,23 +1,35 @@
 
 
-const {Tokenizer} = require('./Tokenizer')
+import {getTokens} from './tokens.js'
 
-class Parser {
+export class Parser {
 
 
 
-  constructor() {
+  init(string) {
+    this._cursor = -1;
     this._string = '';
-    this._tokenizer = new Tokenizer();
+    this._tokens = getTokens(string);
   }
-
+  
   parse(string) {
-    this._string = string;
-    this._tokenizer.init(string);
-
-    this._lookahead = this._tokenizer.getNextToken();
+    this.init(string)
+    this._lookahead = this.getNextToken();
 
     return this.Program()
+  }
+
+  getNextToken() {
+
+    if(!this.hasMoreTokens()){
+      return null
+    }
+
+    return this._tokens[++this._cursor]
+  }
+
+  hasMoreTokens() {
+    return (this._cursor < this._tokens.length);
   }
 
   /**
@@ -28,9 +40,12 @@ class Parser {
    *  ;
    */
   Program() {
+    const statementList = this.StatementList()
     return {
       type: 'Program',
-      body: this.StatementList(),
+      body: statementList,
+      loc: {start: {...statementList[0].loc.start}, end: {...statementList[statementList.length-1].loc.end}},
+      range: [statementList[0].range[0], statementList[statementList.length-1].range[1]],
     }
   }
 
@@ -81,9 +96,7 @@ class Parser {
    */
   EmptyStatement() {
     this._eat(';');
-    return {
-      type: 'EmptyStatement'
-    }
+    return
   }
 
   /**
@@ -92,15 +105,17 @@ class Parser {
    *  ;
    */
    BlockStatement() {
-     this._eat('{');
+     const blockStart = this._eat('{');
 
      const body = this._lookahead.type !== '}' ? this.StatementList('}') : [];
 
-     this._eat('}');
+     const blockEnd = this._eat('}');
 
      return {
        type: 'BlockStatement',
        body,
+       loc: {start: {...body[0].loc.start}, end: {...body[body.length-1].loc.end}},
+       range: [body[0].range[0], body[body.length-1].range[1]], 
      };
    }
 
@@ -123,6 +138,8 @@ class Parser {
       blocklabel,
       blocklabel2,
       body,
+      loc: {start: {...body[0].loc.start}, end: {...body[body.length-1].loc.end}},
+      range: [body[0].range[0], body[body.length-1].range[1]],
     };
   }
 
@@ -136,10 +153,10 @@ class Parser {
    */
   ExpressionStatement() {
     const expression = this.Expression();
-    this._eat(';');
+    // this._eat(';');
     return {
       type: 'ExpressionStatement',
-      expression,
+      ...expression,
     };
   }
 
@@ -166,12 +183,15 @@ class Parser {
      if (!this._isAssignmentOperator(this._lookahead.type)) {
        return left;
      }
+     let operator = this.AssignmentOperator()
 
      return {
        type: 'AssignmentExpression',
-       operator: this.AssignmentOperator().value,
+       operator: operator.value,
        left: this._chekValidAssignmentTarget(left),
        right: this.AssignmentExpression(),
+       loc: operator.loc,
+       range: operator.range,
      };
    }
    
@@ -190,10 +210,12 @@ class Parser {
     * @returns 
     */
    Identifier() {
-     const name = this._eat('IDENTIFIER').value;
+     const name = this._eat('Identifier');
      return {
        type: 'Identifier',
-       name,
+       name: name.value,
+       loc: name.loc,
+       range: name.range 
      };
    }
 
@@ -366,6 +388,8 @@ class Parser {
     return {
       type: 'StringLiteral',
       value: token.value.slice(1, -1),
+      loc: token.loc,
+      range: token.range,
     };
   }
 
@@ -379,7 +403,9 @@ class Parser {
     const token = this._eat('NUMBER');
     return {
       type: 'NumericLiteral',
-      value: Number(token.value)
+      value: Number(token.value),
+      loc: token.loc,
+      range: token.range,
     };
   }
 
@@ -413,7 +439,7 @@ class Parser {
       );
     }
 
-    this._lookahead = this._tokenizer.getNextToken();
+    this._lookahead = this.getNextToken();
 
     return token;
   }
@@ -421,6 +447,4 @@ class Parser {
 
 }
 
-module.exports = {
-  Parser
-};
+

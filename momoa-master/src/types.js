@@ -16,6 +16,7 @@ export const types = {
             type: "String",
             value,
             ...parts
+            
         };
     },
     resource(value, parts = {}) {
