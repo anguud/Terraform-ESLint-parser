@@ -126,7 +126,8 @@ export class Parser {
    */
    ResourceBlockStatement() {
     this._eat('resource');
-    const blocklabel = this._lookahead.type == 'STRING' ? this.StringLiteral() : []; 
+    // TODO: use return from _eat to parse to StringLiteral(_eat retrurn value ) in order to make a new node type for blocklables.  
+    const blocklabel = this._lookahead.type == 'STRING' ? this.StringLiteral() : []; // if false: this is where we could handle "wrong" 
     //next
     const blocklabel2 = this._lookahead.type == 'STRING' ? this.StringLiteral() : [];
 
@@ -184,7 +185,7 @@ export class Parser {
        return left;
      }
      let operator = this.AssignmentOperator()
-
+     // TODO: maybe we should handle edgecases such as: 'this = that = not_Handled' where parser would probalby crash if this happens.
      return {
        type: 'AssignmentExpression',
        operator: operator.value,
