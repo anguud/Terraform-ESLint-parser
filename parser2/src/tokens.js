@@ -17,10 +17,10 @@ const Spec = [
     // Comments:
 
     // Single line: 
-    [/^\/\/.*/, null],
+    [/^\/\/.*/, 'comment'],
 
     // multi-line comments:
-    [/^\/\*[\s\S]*?\*\//, null],
+    [/^\/\*[\s\S]*?\*\//, 'comment'],
 
     // ----------------
     // Symbol, delimiters:
@@ -47,7 +47,7 @@ const Spec = [
     // ----------------
     // Identifiers:
 
-    [/^\w+/, 'IDENTIFIER'],
+    [/^\w+/, 'Identifier'],
 
     // ----------------
     // Assignment operators =, *=, /=, +=, -=,
@@ -103,14 +103,14 @@ const Spec = [
 export function getTokens(code) {
     // starting point:
     var offset = 0; // starting point (we havent reached the fitst character)
-    var lineNumber = 1;
-    var columnNumber = 0;
+    var line = 1;
+    var column = 0;
     var newLine = false;
     
 
     // our list of tokens 
-    const tokens = []; 
-    var index = 0;
+    const tokens = [];
+    
     while (!isEOF()) {
         tokens.push(findTokens());
     }
@@ -122,25 +122,24 @@ export function getTokens(code) {
         if(!hasMoreTokens()) {
             return null
         }
-
         var string = code.slice(offset);
-        getNextToken(string)
-        const start = getLocation()
         
         
         for(const [regexp, tokenType] of Spec) {
             const tokenValue = _match(regexp, string);
-
+            
             // coun't match this rule, continue.
             if (tokenValue == null) {
                 continue
             }
-
+            
             // Should skip token, e.g. whitespace.
             if (tokenType == null){
+                getNextToken()
                 return findTokens();
             }
-
+            const start = getLocation()
+            // getNextToken(string)
             return makeToken(tokenType, tokenValue, start);
         }
         
@@ -167,30 +166,32 @@ export function getTokens(code) {
       if (matched == null) {
           return null;
       }
-      offset += matched[0].length;
+    
       return matched[0];
     }
     
     //get next token
     function getNextToken(tokenstring) {
-        // offset++;
+        
+        
+        let character = code.charAt(++offset);
     
         if (newLine) {
-            lineNumber++;
-            columnNumber = 1;
+            line++;
+            column = 1;
             newLine = false;
         } else {
-            columnNumber++;
+            column++;
         }
     
-        if (tokenstring === "^\r") {
+        if (character === "^\r") {
             newLine = true;
     
             // if we already see a \r, just ignore upcoming \n
             if (code.charAt(offset + 1) === "\n") {
                 offset++;
             }
-        } else if (tokenstring === "^\n") {
+        } else if (character === "^\n") {
             newLine = true;
         }
     
@@ -199,8 +200,8 @@ export function getTokens(code) {
     // get position of token
     function getLocation() {
         return {
-            lineNumber,
-            columnNumber,
+            line,
+            column,
             offset
         };
     }
@@ -212,18 +213,23 @@ export function getTokens(code) {
     //create token
     function makeToken(tokenType, value, startLoc, endLoc) {
         
+
+        offset += value.length;
+        column += value.length;
+
         const endOffset = startLoc.offset + value.length;
         var range = {
             range: [startLoc.offset, endOffset]
         }
+
         return {
             type: tokenType,
             value,
             loc: {
                 start: startLoc,
                 end: endLoc || {
-                    line: startLoc.lineNumber,
-                    column: startLoc.columnNumber + value.length,
+                    line: startLoc.line,
+                    column: startLoc.column + value.length,
                     offset: endOffset
                 }
             },
@@ -244,7 +250,7 @@ function readKeyword(character) {
     // check to see if it actually exists
     if (text.slice(offset, offset + value.length) === value) {
         offset += value.length - 1;
-        columnNumber += value.length - 1;
+        column += value.length - 1;
         return { value, character: next() };
     }
 

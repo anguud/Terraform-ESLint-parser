@@ -210,7 +210,7 @@ export class Parser {
     * @returns 
     */
    Identifier() {
-     const name = this._eat('IDENTIFIER');
+     const name = this._eat('Identifier');
      return {
        type: 'Identifier',
        name: name.value,
