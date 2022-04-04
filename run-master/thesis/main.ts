@@ -1,5 +1,4 @@
-import { getTokens } from "../../parserThesis/src/tokens.js";
-import { Parser } from "../../parserThesis/src/Parser.js";
+import { Parser } from "../../parserTS/src/Parser";
 // import { parse } from "../../parserThesis/src/Parser.js";
 // import { parse } from "../src/parse.js";
 
@@ -14,7 +13,7 @@ const test_string = `{ resource "name" "name2"}`
 
 
 
-let pars = new Parser()
+const pars = new Parser()
 // const ast = parse(some_json_string);
 const ast = pars.parse(some_tf_string);
 // const ast = getTokens(some_tf_string);

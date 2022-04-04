@@ -12,7 +12,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/run-master/thesis/main.js",
+            "program": "${workspaceFolder}/run-master/thesis/main.ts",
             "outFiles": [
                 "${workspaceFolder}/**/*/*.js"
             ]
