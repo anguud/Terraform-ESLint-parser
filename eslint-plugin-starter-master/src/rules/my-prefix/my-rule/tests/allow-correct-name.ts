@@ -1,0 +1,3 @@
+const helloWorld = "value";
+
+export {};

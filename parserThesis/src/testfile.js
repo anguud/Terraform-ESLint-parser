@@ -2,21 +2,7 @@
 
 import {getTokens} from './tokens.js'
 
-export function parse(code, options) {
-  let pars = new Parser()
-  return {
-    ast: pars.parse(code),
-    services: {
-        foo: function() {
-            console.log("foo");
-        }
-    },
-    scopeManager: null,
-    visitorKeys: null
-  }
-}
-
-class Parser {
+export class Parser {
 
 
 
@@ -27,7 +13,7 @@ class Parser {
   }
   
   parse(code,
-    options) {
+    _options) {
     this.init(code)
     this._lookahead = this.getNextToken();
 

@@ -1,0 +1,53 @@
+{
+  "name": "eslint-plugin-starter",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "files": [
+    "lib/**"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "security"
+  ],
+  "scripts": {
+    "build": "rm -rf ./lib && tsc --project ./tsconfig.build.json",
+    "watch": "yarn build --watch",
+    "eslint:files": "eslint",
+    "eslint:plugin": "yarn eslint:files 'src/**/*.{ts,tsx}' --ignore-pattern '**/tests/**/*.ts' --ignore-pattern '**/tests/**/*.tsx'",
+    "eslint:tests": "yarn eslint:files 'src/**/tests/**/*.{ts,tsx}'",
+    "eslint:dummy": "yarn eslint:files 'dummy/**/*.{json,ts,tsx}'",
+    "test": "jest --cache --config=.jestrc.json",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^16.2.3",
+    "@commitlint/config-conventional": "^16.2.1",
+    "@swc-node/jest": "^1.4.3",
+    "@types/eslint": "^8.4.1",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.21",
+    "@typescript-eslint/eslint-plugin": "^5.15.0",
+    "@typescript-eslint/parser": "^5.15.0",
+    "@typescript-eslint/scope-manager": "^5.15.0",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-comment-length": "^0.5.1",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-starter": "link:./",
+    "jest": "^27.5.1",
+    "prettier": "^2.6.0",
+    "typescript": "^4.6.2",
+    "tf-parser": "link:../ParserThesis/src/Parser.js"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
+  },
+  "dependencies": {
+    "@typescript-eslint/utils": "^5.15.0",
+    "enhanced-resolve": "^5.9.2"
+  }
+}

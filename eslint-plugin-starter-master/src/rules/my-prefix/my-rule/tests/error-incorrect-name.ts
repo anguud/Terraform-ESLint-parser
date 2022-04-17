@@ -1,0 +1,3 @@
+const someVariable = "value";
+
+export {};
