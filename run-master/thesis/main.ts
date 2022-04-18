@@ -1,7 +1,4 @@
 import { Parser } from "../../parserTS/src/Parser";
-//import { Parser } from "../../parserThesis/src/Parser";
-//import { parse } from "../../parserThesis/src/Parser.js";
-// import { parse } from "../src/parse.js";
 
 const some_tf_string = `resource "google_compute_ssl_policy" "vulnerable_example" { 
                                 name = "production-ssl-policy"
