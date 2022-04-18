@@ -1,3 +1,0 @@
-const someVariable = "value";
-
-export {};

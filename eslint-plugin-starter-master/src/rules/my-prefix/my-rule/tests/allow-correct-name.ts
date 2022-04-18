@@ -1,3 +1,0 @@
-const helloWorld = "value";
-
-export {};
