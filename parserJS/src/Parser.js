@@ -396,21 +396,6 @@ class Parser {
     return expression;
   }
 
-   /**
-   * AssignmentExpression
-   *  : Expression '='
-   *  ;
-   * 
-   */
-    AssignmentExpressionx() {
-      const expression = this.Expression();
-      this._eat('=');
-      return {
-        type: 'AssignmentExpression',
-        expression,
-      };
-    }
-
 
   /** 
    * StringLiteral 
