@@ -1,6 +1,6 @@
-// import { getTokens } from "../../parserThesis/src/tokens";
-import { parse } from "../../parserThesis/src/Parser.js";
-// import { parse } from "../../parserThesis/src/Parser.js";
+// import { getTokens } from "../../parserJS/src/tokens";
+import { parse } from "../../parserJS/src/Parser.js";
+// import { parse } from "../../parserJS/src/Parser.js";
 // import { parse } from "../src/parse.js";
 
 const some_tf_string = `resource "google_compute_ssl_policy" "vulnerable_example" { 
