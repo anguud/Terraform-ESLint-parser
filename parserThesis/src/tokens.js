@@ -73,7 +73,7 @@ const Spec = [
 
 
 
-function getTokens(code) {
+export function getTokens(code) {
     // starting point:
     var offset = 0; // starting point (we havent reached the fitst character)
     var line = 1;
@@ -211,5 +211,3 @@ function getTokens(code) {
     }
 }
 
-
-export { getTokens }

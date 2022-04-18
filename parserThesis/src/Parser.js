@@ -1,12 +1,12 @@
 
 
-import {getTokens} from './tokens';
+import { getTokens } from './tokens.js';
 import { ScopeManager } from 'eslint-scope';
 
 // const getTokens = require('./tokens');
-// const scopeManager = require('eslint-scope');
+// const ScopeManager = require('eslint-scope');
 
-function parse(code, options) {
+export function parse(code, options) {
   let pars = new Parser()
 
 
@@ -24,6 +24,7 @@ function parse(code, options) {
     'StringLiteral': ['value'],
     'NumericLiteral': ['value']
 };
+
   return {
     ast: pars.parse(code),
     services: {},
@@ -480,9 +481,3 @@ class Parser {
 
 
 }
-
-
-export { parse };
-
-
-

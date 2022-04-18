@@ -1,4 +1,4 @@
-import { getTokens } from "../../parserThesis/src/tokens.js";
+// import { getTokens } from "../../parserThesis/src/tokens";
 import { parse } from "../../parserThesis/src/Parser.js";
 // import { parse } from "../../parserThesis/src/Parser.js";
 // import { parse } from "../src/parse.js";
