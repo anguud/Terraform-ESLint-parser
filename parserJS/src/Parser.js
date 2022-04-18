@@ -20,7 +20,6 @@ export function parse(code, options) {
     'AssignmentExpression': ['operator', 'left', 'right'],
     'Identifier': ['name'],
     'BinaryExpression': ['operator', 'left', 'right' ],
-    'AssignmentExpression': ['expression'],
     'StringLiteral': ['value'],
     'NumericLiteral': ['value']
 };
