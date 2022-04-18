@@ -1,39 +1,8 @@
 
 
-import { getTokens } from './tokens.js';
-import { ScopeManager } from 'eslint-scope';
+import {getTokens} from './tokens.js'
 
-// const getTokens = require('./tokens');
-// const ScopeManager = require('eslint-scope');
-
-export function parse(code, options) {
-  let pars = new Parser()
-
-
-  let scopeManager = new ScopeManager({});
-
-  let visitorKeys = {
-    'Program': [],
-    'BlockStatement': ['body'],
-    'ResourceBlockStatement': ['body', 'blocklabel', 'blocklabel2'],
-    'ExpressionStatement': [],
-    'AssignmentExpression': ['operator', 'left', 'right'],
-    'Identifier': ['name'],
-    'BinaryExpression': ['operator', 'left', 'right' ],
-    'AssignmentExpression': ['expression'],
-    'StringLiteral': ['value'],
-    'NumericLiteral': ['value']
-};
-
-  return {
-    ast: pars.parse(code),
-    services: {},
-    scopeManager: scopeManager,
-    visitorKeys: visitorKeys
-  }
-}
-
-class Parser {
+export class Parser {
 
 
 
@@ -44,7 +13,7 @@ class Parser {
   }
   
   parse(code,
-    options) {
+    _options) {
     this.init(code)
     this._lookahead = this.getNextToken();
 
@@ -75,11 +44,9 @@ class Parser {
     const statementList = this.StatementList()
     return {
       type: 'Program',
-      tokens: statementList,
+      body: statementList,
       loc: {start: {...statementList[0].loc.start}, end: {...statementList[statementList.length-1].loc.end}},
       range: [statementList[0].range[0], statementList[statementList.length-1].range[1]],
-      comments: [], 
-      // value: code.substr(statementList.range[0], statementList.range[1] - statementList.range[0])
     }
   }
 
@@ -481,3 +448,5 @@ class Parser {
 
 
 }
+
+
