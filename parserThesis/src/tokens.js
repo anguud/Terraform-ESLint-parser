@@ -71,37 +71,9 @@ const Spec = [
     [/^'[^']*'/, 'STRING'],
 ];
 
-/**
- * TODO: 
- * 
- * map token to type: token value, tokentype just as in tokenizer -- imported tokenizer Spec
- * 
- * 
- * tokenize method: 
- *  variables: 
- * 
- *  offset integer
- *  lineNumber integer
- *  columnNumber integer
- *  
- *  nextline bool
- *  
- *  tokens empty array
- * 
- *  helper methods: 
- *  
- *  makeToken()
- *      retunrns the node object as defined in definition of nodes above
- * 
- *  getNextToken()
- *      returns next token
- * 
- *  getLocation()
- *      returns the location (lineNumber, colNumber (offset))
- */
 
 
-export function getTokens(code) {
+function getTokens(code) {
     // starting point:
     var offset = 0; // starting point (we havent reached the fitst character)
     var line = 1;
@@ -240,3 +212,4 @@ export function getTokens(code) {
 }
 
 
+export { getTokens }
