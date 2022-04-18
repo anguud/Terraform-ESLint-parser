@@ -14,7 +14,7 @@
             ],
             "program": "${workspaceFolder}/run-master/thesis/main.ts",
             "outFiles": [
-                "${workspaceFolder}/**/*/*.js"
+                "${workspaceFolder}/**/*/*.ts"
             ]
         }
     ]

@@ -4,6 +4,7 @@
     "description": "JSON AST parser, tokenizer, printer, traverser.",
     "author": "Nicholas C. Zakas",
     "main": "/thesis/main.ts",
+    "type": "module",
     "files": [
         "main.ts"
     ],

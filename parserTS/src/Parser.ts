@@ -60,7 +60,8 @@ export class Parser {
    * | StatementList Statement -> Statement Statement Statement Statement
    * ;
    */
-  StatementList(stopLookahead = null): any {
+  StatementList(stopLookahead: null | string = null): any {
+
     const statementList = [this.Statement()];
 
     while (this._lookahead != null && this._lookahead.type !== stopLookahead) {
@@ -75,7 +76,7 @@ export class Parser {
    *  : ExpressionStatement
    *  | BlockStatement
    *  | EmptyStatement
-   *  ;
+   *  ;F
    *
    */
   Statement() {
@@ -159,6 +160,8 @@ export class Parser {
     }
   }
 
+  
+
   /**
    * ExpressionStatement
    *  : Expression ';'
@@ -169,10 +172,11 @@ export class Parser {
     const expression = this.Expression();
     // this._eat(';');
     return {
-      type: "ExpressionStatement",
+      //type: "ExpressionStatement",
       ...expression,
     };
   }
+  
 
   /**
    * Expression
@@ -296,19 +300,26 @@ export class Parser {
     );
   }
 
+
+   // eslint-disable-next-line @typescript-eslint/ban-types
+   exp: {[K: string] : Function} = {
+    MultiplicativeExpression: this.MultiplicativeExpression,
+    PrimaryExpression: this.PrimaryExpression,
+  };
+
   /**
-   * Generic  binary expression.
+   * Generic binary expression.
    *
    * @returns
    */
   _BinaryExpression(builderName: string, operatorToken: string) {
-    let left = this[builderName]();
+    let left = this.exp[builderName]();
 
     while (this._lookahead.type === operatorToken) {
       // operator: *, /
       const operator = this._eat(operatorToken).value;
 
-      const right = this[builderName]();
+      const right = this.exp[builderName]();
 
       left = {
         type: "BinaryExpression",
@@ -392,7 +403,7 @@ export class Parser {
    *  :STRING
    *  ;
    */
-  StringLiteral() : Token {
+  StringLiteral(): Token {
     const token = this._eat("STRING");
     return {
       type: "StringLiteral",
