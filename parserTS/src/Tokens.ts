@@ -107,13 +107,20 @@ export function getTokens(code: string) {
     const tokens: Token[] = [];
 
     while (!isEOF() || !hasMoreTokens()) {
-        tokens.push(findTokens());
+        const token = findTokens()
+        if(token) tokens.push(token);
+        else break;
     }
 
     return tokens;
 
-    function findTokens(): Token {
+    function findTokens(): (Token | null){
         const string = code.slice(offset);
+
+        // When the end of the code is parsed, return null.
+        if(offset >= code.length) {
+            return null;
+        }
 
         for (const [regexp, tokenType] of Spec) {
             const tokenValue = _match(regexp, string);
@@ -129,6 +136,7 @@ export function getTokens(code: string) {
                 return findTokens();
             }
             const start = getLocation();
+
             // getNextToken(string)
             return makeToken(tokenType, tokenValue, start);
         }
