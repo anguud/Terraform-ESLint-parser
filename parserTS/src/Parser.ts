@@ -40,18 +40,40 @@ export class Parser {
    */
   Program(): Statement {
     const statementList = this.StatementList();
-    return {
-      type: "Program",
-      body: statementList,
-      loc: {
-        start: { ...statementList[0].loc.start },
-        end: { ...statementList[statementList.length - 1].loc.end },
-      },
-      range: [
-        statementList[0].range[0],
-        statementList[statementList.length - 1].range[1],
-      ],
-    };
+    if (statementList=== null) {
+      return {
+        type: "Program",
+        body: statementList,
+        loc: {
+          start: { ...statementList[0].loc.start },
+          end: { ...statementList[statementList.length - 1].loc.end },
+        },
+        range: [
+          statementList[0].range[0],
+          statementList[statementList.length - 1].range[1],
+        ],
+      };
+    } else {
+      return {
+        type: "Program",
+        body: statementList,
+        loc: {
+          start: { 
+            line: 0,
+            column: 0,
+            offset: 0
+           },
+          end: { line: 0,
+            column: 0,
+            offset: 0
+          },
+        },
+        range: [
+          0,
+          0,
+        ],
+      };
+    }
   }
 
   /**
@@ -126,6 +148,7 @@ export class Parser {
         },
         range: [body[0].range[0], body[body.length - 1].range[1]],
       };
+      return tmp;
     }
   }
 
@@ -145,6 +168,7 @@ export class Parser {
         this._lookahead.type == "STRING" ? this.StringLiteral() : [];
 
       const body = this._lookahead.type !== "}" ? this.StatementList("}") : [];
+
 
       return {
         type: "ResourceBlockStatement",
@@ -299,38 +323,7 @@ export class Parser {
       "ADDITIVE_OPERATOR"
     );
   }
-
-
-   // eslint-disable-next-line @typescript-eslint/ban-types
-   exp: {[K: string] : Function} = {
-    MultiplicativeExpression: this.MultiplicativeExpression,
-    PrimaryExpression: this.PrimaryExpression,
-  };
-
-  /**
-   * Generic binary expression.
-   *
-   * @returns
-   */
-  _BinaryExpression(builderName: string, operatorToken: string) {
-    let left = this.exp[builderName]();
-
-    while (this._lookahead.type === operatorToken) {
-      // operator: *, /
-      const operator = this._eat(operatorToken).value;
-
-      const right = this.exp[builderName]();
-
-      left = {
-        type: "BinaryExpression",
-        operator,
-        left,
-        right,
-      };
-    }
-
-    return left;
-  }
+  
   /**
    * MultiplicativeExpression
    *   : PrimaryExpression
@@ -343,6 +336,49 @@ export class Parser {
       "MULTIPLICATIVE_OPERATOR"
     );
   }
+
+
+   // eslint-disable-next-line @typescript-eslint/ban-types
+   exp: {[K: string] : Function } = {
+    MultiplicativeExpression: this.MultiplicativeExpression,
+    PrimaryExpression: this.PrimaryExpression,
+  };
+
+  /**
+   * Generic binary expression.
+   *
+   * @returns
+   */
+  _BinaryExpression(builderName: string, operatorToken: string) {
+    let left: any;
+    if (builderName === "MultiplicativeExpression" ) { 
+      left = this.MultiplicativeExpression()
+    } else {
+      left = this.PrimaryExpression();
+    }
+
+    while (this._lookahead.type === operatorToken) {
+      // operator: *, /
+      const operator = this._eat(operatorToken).value;
+      let right: any;
+      if (builderName === "MultiplicativeExpression" ) { 
+        right = this.MultiplicativeExpression()
+      } else {
+        right = this.PrimaryExpression();
+      }
+
+      left = {
+        type: "BinaryExpression",
+        operator,
+        left,
+        right,
+      };
+    }
+
+    return left;
+  }
+
+
   /**
    * PrimaryExpression
    *  : Literal

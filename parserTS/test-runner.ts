@@ -7,6 +7,8 @@ const some_tf_string = `resource "google_compute_ssl_policy" "vulnerable_example
                             }
                         `;
 
+const emptyString = `;`
+
 const test_string = `{ resource "name" "name2"}`;
 
 const pars = new Parser();
