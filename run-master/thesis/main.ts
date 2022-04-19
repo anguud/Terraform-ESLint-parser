@@ -1,4 +1,4 @@
-import { Parser } from "../../parserTS/src/Parser";
+import { Parser } from "terraform-estree-parser";
 
 const some_tf_string = `resource "google_compute_ssl_policy" "vulnerable_example" { 
                                 name = "production-ssl-policy"
