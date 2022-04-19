@@ -149,6 +149,7 @@ class Parser {
        body,
        loc: {start: {...body[0].loc.start}, end: {...body[body.length-1].loc.end}},
        range: [body[0].range[0], body[body.length-1].range[1]], 
+       parent: null,
      };
    }
 
@@ -174,6 +175,7 @@ class Parser {
       body,
       loc: {start: {...body[0].loc.start}, end: {...body[body.length-1].loc.end}},
       range: [body[0].range[0], body[body.length-1].range[1]],
+      parent: null,
     };
   }
 
@@ -191,6 +193,7 @@ class Parser {
     return {
       type: 'ExpressionStatement',
       ...expression,
+      parent: null,
     };
   }
 
@@ -226,6 +229,7 @@ class Parser {
        right: this.AssignmentExpression(),
        loc: operator.loc,
        range: operator.range,
+       parent: null,
      };
    }
    
@@ -249,7 +253,8 @@ class Parser {
        type: 'Identifier',
        name: name.value,
        loc: name.loc,
-       range: name.range 
+       range: name.range,
+       parent: null,
      };
    }
 
@@ -338,6 +343,7 @@ class Parser {
         operator,
         left,
         right,
+        parent: null,
       };
     }
 
@@ -409,6 +415,7 @@ class Parser {
       value: token.value.slice(1, -1),
       loc: token.loc,
       range: token.range,
+      parent: null,
     };
   }
 
@@ -425,6 +432,7 @@ class Parser {
       value: Number(token.value),
       loc: token.loc,
       range: token.range,
+      parent: null,
     };
   }
 
