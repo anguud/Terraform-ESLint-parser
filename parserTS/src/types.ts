@@ -24,6 +24,10 @@ export interface Statement {
   range: [number, number];
 }
 
+export interface Blockbody {
+  body: any;
+}
+
 export interface Assignment {
   type: string;
   operator: string;

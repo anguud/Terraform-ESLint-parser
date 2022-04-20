@@ -39,8 +39,8 @@ export class Parser {
    *  ;
    */
   Program(): Statement {
-    const statementList = this.StatementList();
-    if (statementList=== null) {
+    const statementList = this.StatementList("initial");
+    if (statementList !== null) {
       return {
         type: "Program",
         body: statementList,
@@ -82,12 +82,12 @@ export class Parser {
    * | StatementList Statement -> Statement Statement Statement Statement
    * ;
    */
-  StatementList(stopLookahead: null | string = null): any {
+  StatementList(stopLookahead: null | string = null, config: string | null = null): any {
 
-    const statementList = [this.Statement()];
+    const statementList = [this.Statement(config)];
 
-    while (this._lookahead != null && this._lookahead.type !== stopLookahead) {
-      statementList.push(this.Statement());
+    while (this._lookahead != null && this._lookahead.type !== stopLookahead && config !== "block") {
+      statementList.push(this.Statement(config));
     }
 
     return statementList;
@@ -101,13 +101,13 @@ export class Parser {
    *  ;F
    *
    */
-  Statement() {
+  Statement(config: string | null= null) {
     if (this._lookahead != null) {
       switch (this._lookahead.type) {
         case ";":
           return this.EmptyStatement();
         case "{":
-          return this.BlockStatement();
+          return this.BlockStatement(config);
         case "resource":
           return this.ResourceBlockStatement();
         default:
@@ -131,24 +131,24 @@ export class Parser {
    *  : '{' optStatementList '}'
    *  ;
    */
-  BlockStatement() {
-    const blockStart = this._eat("{");
+  BlockStatement(config: string | null = null) {
+    const blockStart = this._eat("{");  
 
     if (this._lookahead != null) {
       const body = this._lookahead.type !== "}" ? this.StatementList("}") : [];
 
-      const blockEnd = this._eat("}");
+      const blockEndToken = this._eat("}");
 
-      const tmp: Statement = {
+      return {
         type: "BlockStatement",
         body,
         loc: {
-          start: { ...body[0].loc.start },
-          end: { ...body[body.length - 1].loc.end },
+          start: blockStart.loc.start,
+          end: blockEndToken.loc.end,
         },
-        range: [body[0].range[0], body[body.length - 1].range[1]],
+        range: [blockStart.range[0], blockEndToken.range[1]],
       };
-      return tmp;
+    
     }
   }
 
@@ -158,7 +158,7 @@ export class Parser {
    *  ;
    */
   ResourceBlockStatement() {
-    this._eat("resource");
+    const resourceToken = this._eat("resource");
     // TODO: use return from _eat to parse to StringLiteral(_eat retrurn value ) in order to make a new node type for blocklables.
     if (this._lookahead != null) {
       const blocklabel =
@@ -167,19 +167,18 @@ export class Parser {
       const blocklabel2 =
         this._lookahead.type == "STRING" ? this.StringLiteral() : [];
 
-      const body = this._lookahead.type !== "}" ? this.StatementList("}") : [];
-
+      const body = this._lookahead.type !== "}" ? this.StatementList("}", "block") : [];
 
       return {
         type: "ResourceBlockStatement",
         blocklabel,
         blocklabel2,
-        body,
+        body: body[0].body,
         loc: {
-          start: { ...body[0].loc.start },
-          end: { ...body[body.length - 1].loc.end },
+          start: resourceToken.loc.start,
+          end: body[0].loc.end,
         },
-        range: [body[0].range[0], body[body.length - 1].range[1]],
+        range: [resourceToken.range[0], body[0].range[1]],
       };
     }
   }
