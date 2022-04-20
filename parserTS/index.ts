@@ -1,3 +1,3 @@
-import {Parser} from './src/Parser';
+import {parse} from './src/Parser';
 
-export {Parser}
+export {parse}

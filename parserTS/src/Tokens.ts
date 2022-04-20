@@ -228,6 +228,7 @@ export function getTokens(code: string) {
                 },
             },
             range: [startLoc.offset, endOffset],
+            parent: null,
         };
     }
 }

@@ -1,7 +1,33 @@
 import { getTokens } from "./Tokens";
 import { Token, Statement, Assignment } from "./types";
+import { SourceCode } from 'eslint';
 
-export class Parser {
+export function parse(code, options) {
+
+
+  let visitorKeys: SourceCode.VisitorKeys = {
+      'Program': [],
+      'BlockStatement': ['body'],
+      'ResourceBlockStatement': ['body', 'blocklabel', 'blocklabel2'],
+      'ExpressionStatement': [],
+      'AssignmentExpression': ['operator', 'left', 'right'],
+      'Identifier': ['name'],
+      'BinaryExpression': ['operator', 'left', 'right' ],
+      'StringLiteral': ['value'],
+      'NumericLiteral': ['value']
+  };
+
+  let pars = new Parser()
+
+
+  return {
+    ast: pars.parse(code),
+    services: {},
+    visitorKeys: visitorKeys
+  }
+}
+
+class Parser {
   _cursor: number;
   _string: string;
   _tokens: Token[];
@@ -52,6 +78,7 @@ export class Parser {
           statementList[0].range[0],
           statementList[statementList.length - 1].range[1],
         ],
+        parent: null,
       };
     } else {
       return {
@@ -72,6 +99,7 @@ export class Parser {
           0,
           0,
         ],
+        parent: null,
       };
     }
   }
@@ -179,6 +207,7 @@ export class Parser {
           end: body[0].loc.end,
         },
         range: [resourceToken.range[0], body[0].range[1]],
+        parent: null,
       };
     }
   }
@@ -233,6 +262,7 @@ export class Parser {
       right: this.AssignmentExpression(),
       loc: operator.loc,
       range: operator.range,
+      parent: null,
     };
   }
 
@@ -419,21 +449,6 @@ export class Parser {
   }
 
   /**
-   * AssignmentExpression
-   *  : Expression '='
-   *  ;
-   *
-   */
-  AssignmentExpressionx() {
-    const expression = this.Expression();
-    this._eat("=");
-    return {
-      type: "AssignmentExpression",
-      expression,
-    };
-  }
-
-  /**
    * StringLiteral
    *  :STRING
    *  ;
@@ -445,6 +460,7 @@ export class Parser {
       value: token.value.slice(1, -1),
       loc: token.loc,
       range: token.range,
+      parent: null,
     };
   }
 
