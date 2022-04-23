@@ -1,4 +1,4 @@
-const { Parser } = require('../src/Parser');
+const { Parser } = require('../src/Parser.mjs');
 const assert = require('assert');
 
 const parser = new Parser();
@@ -25,7 +25,7 @@ function exec() {
     `;
 
     const ast = parser.parse(program);
-    
+
     console.log(JSON.stringify(ast, null, 2));
 }
 
@@ -41,7 +41,6 @@ function test(program, expected) {
 }
 
 // Run all tests:
-
 tests.forEach(testRun => testRun(test));
 
 console.log('All assertions passed!');
