@@ -6,6 +6,7 @@ export interface Token {
     end: Location;
   };
   range: [number, number];
+  parent: any;
 }
 
 export interface Location {
@@ -22,6 +23,11 @@ export interface Statement {
     end: Location;
   };
   range: [number, number];
+  parent: any;
+}
+
+export interface Blockbody {
+  body: any;
 }
 
 export interface Assignment {
@@ -34,4 +40,5 @@ export interface Assignment {
     end: Location;
   };
   range: [number, number];
+  parent: any;
 }

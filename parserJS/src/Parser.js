@@ -1,7 +1,6 @@
 
 
 import { getTokens } from './tokens.js';
-import { ScopeManager } from 'eslint-scope';
 
 // const getTokens = require('./tokens');
 // const ScopeManager = require('eslint-scope');
@@ -27,7 +26,6 @@ export function parse(code, options) {
   return {
     ast: pars.parse(code),
     services: {},
-    scopeManager: scopeManager,
     visitorKeys: visitorKeys
   }
 }
