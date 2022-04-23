@@ -1,8 +1,5 @@
 .history/
 eslistn-plugin-starter-master/node_modules
 **node_modules/
-<<<<<<< HEAD
-.DS_Store
-=======
 .idea
->>>>>>> markogmathias
+.DS_Store
