@@ -11,9 +11,9 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parse = void 0;
+exports.parseForESLint = void 0;
 var Tokens_1 = require("./Tokens");
-function parse(code, options) {
+function parseForESLint(code, options) {
     var visitorKeys = {
         'Program': [],
         'BlockStatement': ['body'],
@@ -32,7 +32,7 @@ function parse(code, options) {
         visitorKeys: visitorKeys
     };
 }
-exports.parse = parse;
+exports.parseForESLint = parseForESLint;
 var Parser = /** @class */ (function () {
     function Parser() {
         // eslint-disable-next-line @typescript-eslint/ban-types
@@ -82,6 +82,7 @@ var Parser = /** @class */ (function () {
                     statementList[0].range[0],
                     statementList[statementList.length - 1].range[1],
                 ],
+                comments: this._tokens,
                 parent: null,
             };
         }
@@ -105,6 +106,7 @@ var Parser = /** @class */ (function () {
                     0,
                     0,
                 ],
+                comments: this._tokens,
                 parent: null,
             };
         }

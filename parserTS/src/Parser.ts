@@ -2,7 +2,7 @@ import { getTokens } from "./Tokens";
 import  *  as types from "./types";
 import { SourceCode } from 'eslint';
 
-export function parse(code, options) {
+export function parseForESLint(code: string, options: any,) {
 
 
   let visitorKeys: SourceCode.VisitorKeys = {
@@ -79,6 +79,7 @@ class Parser {
           statementList[0].range[0],
           statementList[statementList.length - 1].range[1],
         ],
+        comments: this._tokens,
         parent: null,
       };
     } else {
@@ -101,6 +102,7 @@ class Parser {
           0,
           0,
         ],
+        comments: this._tokens,
         parent: null,
       };
     }

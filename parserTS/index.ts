@@ -1,3 +1,3 @@
-import {parse} from './src/Parser';
+import {parseForESLint} from './src/Parser';
 
-export {parse}
+export {parseForESLint}
