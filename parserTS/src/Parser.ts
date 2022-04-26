@@ -1,5 +1,5 @@
 import { getTokens } from "./Tokens";
-import { Token, Statement, Assignment } from "./types";
+import  *  as types from "./types";
 import { SourceCode } from 'eslint';
 
 export function parse(code, options) {
@@ -30,8 +30,8 @@ export function parse(code, options) {
 class Parser {
   _cursor: number;
   _string: string;
-  _tokens: Token[];
-  _lookahead: Token; //
+  _tokens: types.Token[];
+  _lookahead: types.Token; //
 
   init(string: string) {
     this._cursor = -1;
@@ -49,7 +49,7 @@ class Parser {
     return this.Program();
   }
 
-  getNextToken(): Token {
+  getNextToken(): types.Token {
     return this._tokens[++this._cursor];
   }
 
@@ -64,12 +64,13 @@ class Parser {
    *  : StatementList
    *  ;
    */
-  Program(): Statement {
+  Program(): types.Program {
     const statementList = this.StatementList("initial");
     if (statementList !== null) {
-      return {
+      return  {
         type: "Program",
         body: statementList,
+        tokens: this._tokens,
         loc: {
           start: { ...statementList[0].loc.start },
           end: { ...statementList[statementList.length - 1].loc.end },
@@ -84,6 +85,7 @@ class Parser {
       return {
         type: "Program",
         body: statementList,
+        tokens: this._tokens,
         loc: {
           start: { 
             line: 0,
@@ -247,7 +249,7 @@ class Parser {
    *  ;
    * @returns
    */
-  AssignmentExpression(): Assignment {
+  AssignmentExpression(): types.Assignment {
     const left = this.AdditiveExpression();
     if (!this._isAssignmentOperator(this._lookahead.type)) {
       return left;
@@ -293,7 +295,7 @@ class Parser {
   /**
    * Extra check whether it's valid assignment target.
    */
-  _chekValidAssignmentTarget(node: Statement) {
+  _chekValidAssignmentTarget(node: types.Statement) {
     if (node.type === "Identifier") {
       return node;
     }
@@ -308,7 +310,7 @@ class Parser {
     return tokenType === "SIMPLE_ASSIGN" || tokenType === "COMPLEX_ASSIGN";
   }
 
-  /**
+  /** 
    * AssignmentOperator
    *   : SIMPLE_ASSIGN
    *   | COMPLEX_ASSIGN
@@ -453,7 +455,7 @@ class Parser {
    *  :STRING
    *  ;
    */
-  StringLiteral(): Token {
+  StringLiteral(): types.Token {
     const token = this._eat("STRING");
     return {
       type: "StringLiteral",

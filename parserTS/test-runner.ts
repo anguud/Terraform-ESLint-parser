@@ -27,7 +27,7 @@ const emptyString = `;`
 const test_string = `{ resource "name" "name2"}`;
 
 // const ast = parse(some_json_string);
-const ast = parse(complex_tf_string, null);
+const ast = parse(complex_tf_string, {});
 // const ast = getTokens(some_tf_string);
 
 console.log(JSON.stringify(ast, null, 3));
