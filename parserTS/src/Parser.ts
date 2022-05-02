@@ -6,7 +6,7 @@ import { unionWith } from "eslint-visitor-keys"
 export function parseForESLint(code: string, options: any,) {
 
 
-  let visitorKeys: SourceCode.VisitorKeys = {
+  const visitorKeys: SourceCode.VisitorKeys = {
       Program: [],
       BlockStatement: ['body'],
       ResourceBlockStatement: ['body', 'blocklabel', 'blocklabel2'],
@@ -18,7 +18,7 @@ export function parseForESLint(code: string, options: any,) {
       NumericLiteral: ['value']
   };
 
-  let pars = new Parser()
+  const pars = new Parser()
 
 
   return {
