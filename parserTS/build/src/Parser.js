@@ -13,23 +13,24 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseForESLint = void 0;
 var Tokens_1 = require("./Tokens");
+var eslint_visitor_keys_1 = require("eslint-visitor-keys");
 function parseForESLint(code, options) {
     var visitorKeys = {
-        'Program': [],
-        'BlockStatement': ['body'],
-        'ResourceBlockStatement': ['body', 'blocklabel', 'blocklabel2'],
-        'ExpressionStatement': [],
-        'AssignmentExpression': ['operator', 'left', 'right'],
-        'Identifier': ['name'],
-        'BinaryExpression': ['operator', 'left', 'right'],
-        'StringLiteral': ['value'],
-        'NumericLiteral': ['value']
+        Program: [],
+        BlockStatement: ['body'],
+        ResourceBlockStatement: ['body', 'blocklabel', 'blocklabel2'],
+        ExpressionStatement: [],
+        AssignmentExpression: ['operator', 'left', 'right'],
+        Identifier: ['name'],
+        BinaryExpression: ['operator', 'left', 'right'],
+        StringLiteral: ['value'],
+        NumericLiteral: ['value']
     };
     var pars = new Parser();
     return {
         ast: pars.parse(code),
         services: {},
-        visitorKeys: visitorKeys
+        visitorKeys: (0, eslint_visitor_keys_1.unionWith)(visitorKeys)
     };
 }
 exports.parseForESLint = parseForESLint;

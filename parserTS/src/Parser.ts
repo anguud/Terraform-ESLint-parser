@@ -1,20 +1,21 @@
 import { getTokens } from "./Tokens";
 import  *  as types from "./types";
 import { SourceCode } from 'eslint';
+import { unionWith } from "eslint-visitor-keys"
 
 export function parseForESLint(code: string, options: any,) {
 
 
   let visitorKeys: SourceCode.VisitorKeys = {
-      'Program': [],
-      'BlockStatement': ['body'],
-      'ResourceBlockStatement': ['body', 'blocklabel', 'blocklabel2'],
-      'ExpressionStatement': [],
-      'AssignmentExpression': ['operator', 'left', 'right'],
-      'Identifier': ['name'],
-      'BinaryExpression': ['operator', 'left', 'right' ],
-      'StringLiteral': ['value'],
-      'NumericLiteral': ['value']
+      Program: [],
+      BlockStatement: ['body'],
+      ResourceBlockStatement: ['body', 'blocklabel', 'blocklabel2'],
+      ExpressionStatement: [],
+      AssignmentExpression: ['operator', 'left', 'right'],
+      Identifier: ['name'],
+      BinaryExpression: ['operator', 'left', 'right' ],
+      StringLiteral: ['value'],
+      NumericLiteral: ['value']
   };
 
   let pars = new Parser()
@@ -23,7 +24,7 @@ export function parseForESLint(code: string, options: any,) {
   return {
     ast: pars.parse(code),
     services: {},
-    visitorKeys: visitorKeys
+    visitorKeys: unionWith(visitorKeys)
   }
 }
 
