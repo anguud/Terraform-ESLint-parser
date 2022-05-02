@@ -83,7 +83,7 @@ var Parser = /** @class */ (function () {
                     statementList[0].range[0],
                     statementList[statementList.length - 1].range[1],
                 ],
-                comments: this._tokens,
+                comments: [],
                 parent: null,
             };
         }
@@ -107,7 +107,7 @@ var Parser = /** @class */ (function () {
                     0,
                     0,
                 ],
-                comments: this._tokens,
+                comments: [],
                 parent: null,
             };
         }

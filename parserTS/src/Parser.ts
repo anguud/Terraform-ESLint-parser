@@ -80,7 +80,7 @@ class Parser {
           statementList[0].range[0],
           statementList[statementList.length - 1].range[1],
         ],
-        comments: this._tokens,
+        comments: [],
         parent: null,
       };
     } else {
@@ -103,7 +103,7 @@ class Parser {
           0,
           0,
         ],
-        comments: this._tokens,
+        comments: [],
         parent: null,
       };
     }
