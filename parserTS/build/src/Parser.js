@@ -73,7 +73,7 @@ var Parser = /** @class */ (function () {
         if (statementList !== null) {
             return {
                 type: "Program",
-                body: statementList[0],
+                body: statementList,
                 tokens: this._tokens,
                 loc: {
                     start: __assign({}, statementList[0].loc.start),
@@ -179,6 +179,7 @@ var Parser = /** @class */ (function () {
                     end: blockEndToken.loc.end,
                 },
                 range: [blockStart.range[0], blockEndToken.range[1]],
+                parent: null,
             };
         }
     };
@@ -199,7 +200,7 @@ var Parser = /** @class */ (function () {
                 type: "ResourceBlockStatement",
                 blocklabel: blocklabel,
                 blocklabel2: blocklabel2,
-                body: body,
+                body: body[0].body,
                 loc: {
                     start: resourceToken.loc.start,
                     end: body[0].loc.end,
@@ -245,6 +246,7 @@ var Parser = /** @class */ (function () {
         if (typeof right.loc === "undefined") {
             var endLoc = right[0].loc.end;
             var endRange = right[0].range[1];
+            right = right[0];
         }
         else {
             var endLoc = right.loc.end;
@@ -254,7 +256,7 @@ var Parser = /** @class */ (function () {
             type: "AssignmentExpression",
             operator: operator.value,
             left: this._chekValidAssignmentTarget(left),
-            right: right[0],
+            right: right,
             loc: {
                 start: left.loc.start,
                 end: endLoc
@@ -292,7 +294,7 @@ var Parser = /** @class */ (function () {
             return {
                 type: "TFBlock",
                 name: name.value,
-                body: body,
+                body: body[0].body,
                 loc: {
                     start: name.loc.start,
                     end: body[0].loc.end,
@@ -394,6 +396,7 @@ var Parser = /** @class */ (function () {
                 operator: operator,
                 left: left,
                 right: right,
+                parent: null,
             };
         }
         return left;
@@ -464,6 +467,7 @@ var Parser = /** @class */ (function () {
             value: Number(token.value),
             loc: token.loc,
             range: token.range,
+            parent: null,
         };
     };
     //   /**

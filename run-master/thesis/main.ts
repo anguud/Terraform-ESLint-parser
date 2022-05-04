@@ -90,17 +90,17 @@ const extendingParser1 = `resource "google_bigquery_dataset" "dataset" {
 // console.log(JSON.stringify(ast, null, 3));
 // const ast = getTokens(some_tf_string);
 
-// // Terragoat
-// const goatAst = parseForESLint(terraGoat, {})
-// console.log(JSON.stringify(goatAst, null, 3));
+// Terragoat
+const goatAst = parseForESLint(terraGoat, {})
+console.log(JSON.stringify(goatAst, null, 3));
 
 // extend Parser 
 // const extendpaser = parseForESLint(extendingParser, {});
 // console.log(JSON.stringify(extendpaser, null, 3));
 
-// extend Parser1
-const extendpaser = parseForESLint(extendingParser1, {});
-console.log(JSON.stringify(extendpaser.ast, null, 3));
+// // extend Parser1
+// const extendpaser = parseForESLint(extendingParser1, {});
+// console.log(JSON.stringify(extendpaser.ast, null, 3));
 
 
 // console.log(ast);

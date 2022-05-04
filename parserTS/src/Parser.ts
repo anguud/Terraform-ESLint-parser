@@ -71,7 +71,7 @@ class Parser {
     if (statementList !== null) {
       return {
         type: "Program",
-        body: statementList[0],
+        body: statementList,
         tokens: this._tokens,
         loc: {
           start: { ...statementList[0].loc.start },
@@ -182,6 +182,7 @@ class Parser {
           end: blockEndToken.loc.end,
         },
         range: [blockStart.range[0], blockEndToken.range[1]],
+        parent: null,
       };
 
     }
@@ -208,7 +209,7 @@ class Parser {
         type: "ResourceBlockStatement",
         blocklabel,
         blocklabel2,
-        body: body,
+        body: body[0].body,
         loc: {
           start: resourceToken.loc.start,
           end: body[0].loc.end,
@@ -261,11 +262,12 @@ class Parser {
     }
 
     const operator = this.AssignmentOperator();
-    const right = this.AssignmentExpression()
+    var right = this.AssignmentExpression()
     
     if (typeof right.loc === "undefined"){
       var endLoc = right[0].loc.end
       var endRange = right[0].range[1]
+      right = right[0]
     } else {
       var endLoc = right.loc.end
       var endRange = right.range[1]
@@ -274,7 +276,7 @@ class Parser {
       type: "AssignmentExpression",
       operator: operator.value,
       left: this._chekValidAssignmentTarget(left),
-      right: right[0],
+      right: right,
       loc: {
         start: left.loc.start,
         end: endLoc
@@ -316,7 +318,7 @@ class Parser {
       return {
         type: "TFBlock",
         name: name.value,
-        body: body,
+        body: body[0].body,
         loc: {
           start: name.loc.start,
           end: body[0].loc.end,
@@ -439,6 +441,7 @@ class Parser {
         operator,
         left,
         right,
+        parent: null,
       };
     }
 
@@ -516,6 +519,7 @@ class Parser {
       value: Number(token.value),
       loc: token.loc,
       range: token.range,
+      parent: null,
     };
   }
 
