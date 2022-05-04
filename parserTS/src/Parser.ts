@@ -1,21 +1,22 @@
 import { getTokens } from "./Tokens";
-import  *  as types from "./types";
+import *  as types from "./types";
 import { SourceCode } from 'eslint';
 import { unionWith } from "eslint-visitor-keys"
+import { endianness } from "os";
 
 export function parseForESLint(code: string, options: any,) {
 
 
   const visitorKeys: SourceCode.VisitorKeys = {
-      Program: [],
-      BlockStatement: ['body'],
-      ResourceBlockStatement: ['body', 'blocklabel', 'blocklabel2'],
-      ExpressionStatement: [],
-      AssignmentExpression: ['operator', 'left', 'right'],
-      Identifier: ['name'],
-      BinaryExpression: ['operator', 'left', 'right' ],
-      StringLiteral: ['value'],
-      NumericLiteral: ['value']
+    Program: [],
+    BlockStatement: ['body'],
+    ResourceBlockStatement: ['body', 'blocklabel', 'blocklabel2'],
+    ExpressionStatement: [],
+    AssignmentExpression: ['operator', 'left', 'right'],
+    Identifier: ['name'],
+    BinaryExpression: ['operator', 'left', 'right'],
+    StringLiteral: ['value'],
+    NumericLiteral: ['value']
   };
 
   const pars = new Parser()
@@ -68,9 +69,9 @@ class Parser {
   Program(): types.Program {
     const statementList = this.StatementList("initial");
     if (statementList !== null) {
-      return  {
+      return {
         type: "Program",
-        body: statementList,
+        body: statementList[0],
         tokens: this._tokens,
         loc: {
           start: { ...statementList[0].loc.start },
@@ -89,12 +90,13 @@ class Parser {
         body: statementList,
         tokens: this._tokens,
         loc: {
-          start: { 
+          start: {
             line: 0,
             column: 0,
             offset: 0
-           },
-          end: { line: 0,
+          },
+          end: {
+            line: 0,
             column: 0,
             offset: 0
           },
@@ -134,7 +136,7 @@ class Parser {
    *  ;F
    *
    */
-  Statement(config: string | null= null) {
+  Statement(config: string | null = null) {
     if (this._lookahead != null) {
       switch (this._lookahead.type) {
         case ";":
@@ -165,7 +167,7 @@ class Parser {
    *  ;
    */
   BlockStatement(config: string | null = null) {
-    const blockStart = this._eat("{");  
+    const blockStart = this._eat("{");
 
     if (this._lookahead != null) {
       const body = this._lookahead.type !== "}" ? this.StatementList("}") : [];
@@ -181,7 +183,7 @@ class Parser {
         },
         range: [blockStart.range[0], blockEndToken.range[1]],
       };
-    
+
     }
   }
 
@@ -206,7 +208,7 @@ class Parser {
         type: "ResourceBlockStatement",
         blocklabel,
         blocklabel2,
-        body: body[0].body,
+        body: body,
         loc: {
           start: resourceToken.loc.start,
           end: body[0].loc.end,
@@ -217,7 +219,7 @@ class Parser {
     }
   }
 
-  
+
 
   /**
    * ExpressionStatement
@@ -233,7 +235,7 @@ class Parser {
       ...expression,
     };
   }
-  
+
 
   /**
    * Expression
@@ -252,21 +254,32 @@ class Parser {
    *  ;
    * @returns
    */
-  AssignmentExpression(): types.Assignment {
+  AssignmentExpression(): types.Assignment | types.Statement {
     const left = this.AdditiveExpression();
     if (!this._isAssignmentOperator(this._lookahead.type)) {
       return left;
     }
 
     const operator = this.AssignmentOperator();
-    // TODO: maybe we should handle edgecases such as: 'this = that = not_Handled' where parser would probalby crash if this happens.
+    const right = this.AssignmentExpression()
+    
+    if (typeof right.loc === "undefined"){
+      var endLoc = right[0].loc.end
+      var endRange = right[0].range[1]
+    } else {
+      var endLoc = right.loc.end
+      var endRange = right.range[1]
+    }
     return {
       type: "AssignmentExpression",
       operator: operator.value,
       left: this._chekValidAssignmentTarget(left),
-      right: this.AssignmentExpression(),
-      loc: operator.loc,
-      range: operator.range,
+      right: right[0],
+      loc: {
+        start: left.loc.start,
+        end: endLoc
+      },
+      range: [left.range[0], endRange],
       parent: null,
     };
   }
@@ -287,12 +300,32 @@ class Parser {
    */
   Identifier() {
     const name = this._eat("Identifier");
-    return {
-      type: "Identifier",
-      name: name.value,
-      loc: name.loc,
-      range: name.range,
-    };
+    if (this._lookahead.type !== "{") {
+      return {
+        type: "Identifier",
+        name: name.value,
+        loc: name.loc,
+        range: name.range,
+        parent: null,
+      };
+    }
+
+    if (this._lookahead !== null) {
+      const body = this.StatementList("}", "block");
+
+      return {
+        type: "TFBlock",
+        name: name.value,
+        body: body,
+        loc: {
+          start: name.loc.start,
+          end: body[0].loc.end,
+        },
+        range: [name.range[0], body[0].range[1]],
+        parent: null,
+      }
+
+    }
   }
 
   /**
@@ -357,7 +390,7 @@ class Parser {
       "ADDITIVE_OPERATOR"
     );
   }
-  
+
   /**
    * MultiplicativeExpression
    *   : PrimaryExpression
@@ -372,8 +405,8 @@ class Parser {
   }
 
 
-   // eslint-disable-next-line @typescript-eslint/ban-types
-   exp: {[K: string] : Function } = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  exp: { [K: string]: Function } = {
     MultiplicativeExpression: this.MultiplicativeExpression,
     PrimaryExpression: this.PrimaryExpression,
   };
@@ -385,7 +418,7 @@ class Parser {
    */
   _BinaryExpression(builderName: string, operatorToken: string) {
     let left: any;
-    if (builderName === "MultiplicativeExpression" ) { 
+    if (builderName === "MultiplicativeExpression") {
       left = this.MultiplicativeExpression()
     } else {
       left = this.PrimaryExpression();
@@ -395,7 +428,7 @@ class Parser {
       // operator: *, /
       const operator = this._eat(operatorToken).value;
       let right: any;
-      if (builderName === "MultiplicativeExpression" ) { 
+      if (builderName === "MultiplicativeExpression") {
         right = this.MultiplicativeExpression()
       } else {
         right = this.PrimaryExpression();
@@ -428,6 +461,8 @@ class Parser {
     switch (this._lookahead.type) {
       case "(":
         return this.ParentesizedExpression();
+      case "{":
+        return this.StatementList("}");
       default:
         return this.LeftHandSideExpression();
     }

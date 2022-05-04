@@ -73,7 +73,7 @@ var Parser = /** @class */ (function () {
         if (statementList !== null) {
             return {
                 type: "Program",
-                body: statementList,
+                body: statementList[0],
                 tokens: this._tokens,
                 loc: {
                     start: __assign({}, statementList[0].loc.start),
@@ -98,7 +98,8 @@ var Parser = /** @class */ (function () {
                         column: 0,
                         offset: 0
                     },
-                    end: { line: 0,
+                    end: {
+                        line: 0,
                         column: 0,
                         offset: 0
                     },
@@ -198,7 +199,7 @@ var Parser = /** @class */ (function () {
                 type: "ResourceBlockStatement",
                 blocklabel: blocklabel,
                 blocklabel2: blocklabel2,
-                body: body[0].body,
+                body: body,
                 loc: {
                     start: resourceToken.loc.start,
                     end: body[0].loc.end,
@@ -240,14 +241,25 @@ var Parser = /** @class */ (function () {
             return left;
         }
         var operator = this.AssignmentOperator();
-        // TODO: maybe we should handle edgecases such as: 'this = that = not_Handled' where parser would probalby crash if this happens.
+        var right = this.AssignmentExpression();
+        if (typeof right.loc === "undefined") {
+            var endLoc = right[0].loc.end;
+            var endRange = right[0].range[1];
+        }
+        else {
+            var endLoc = right.loc.end;
+            var endRange = right.range[1];
+        }
         return {
             type: "AssignmentExpression",
             operator: operator.value,
             left: this._chekValidAssignmentTarget(left),
-            right: this.AssignmentExpression(),
-            loc: operator.loc,
-            range: operator.range,
+            right: right[0],
+            loc: {
+                start: left.loc.start,
+                end: endLoc
+            },
+            range: [left.range[0], endRange],
             parent: null,
         };
     };
@@ -266,12 +278,29 @@ var Parser = /** @class */ (function () {
      */
     Parser.prototype.Identifier = function () {
         var name = this._eat("Identifier");
-        return {
-            type: "Identifier",
-            name: name.value,
-            loc: name.loc,
-            range: name.range,
-        };
+        if (this._lookahead.type !== "{") {
+            return {
+                type: "Identifier",
+                name: name.value,
+                loc: name.loc,
+                range: name.range,
+                parent: null,
+            };
+        }
+        if (this._lookahead !== null) {
+            var body = this.StatementList("}", "block");
+            return {
+                type: "TFBlock",
+                name: name.value,
+                body: body,
+                loc: {
+                    start: name.loc.start,
+                    end: body[0].loc.end,
+                },
+                range: [name.range[0], body[0].range[1]],
+                parent: null,
+            };
+        }
     };
     /**
      * Extra check whether it's valid assignment target.
@@ -384,6 +413,8 @@ var Parser = /** @class */ (function () {
         switch (this._lookahead.type) {
             case "(":
                 return this.ParentesizedExpression();
+            case "{":
+                return this.StatementList("}");
             default:
                 return this.LeftHandSideExpression();
         }

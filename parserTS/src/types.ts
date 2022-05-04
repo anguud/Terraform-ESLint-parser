@@ -34,7 +34,6 @@ export interface Token extends Location {
 export interface Statement extends Location, Parent {
   type: string;
   body: any;
-  range: [number, number];
 }
 
 export interface Program extends Location, Parent {
