@@ -257,14 +257,14 @@ class Parser {
    */
   AssignmentExpression(): types.Assignment | types.Statement {
     const left = this.AdditiveExpression();
-    if (!this._isAssignmentOperator(this._lookahead.type)) {
+    if ((typeof this._lookahead === "undefined") || (!this._isAssignmentOperator(this._lookahead.type))) {
       return left;
     }
 
     const operator = this.AssignmentOperator();
     var right = this.AssignmentExpression()
-    
-    if (typeof right.loc === "undefined"){
+
+    if (typeof right.loc === "undefined") {
       var endLoc = right[0].loc.end
       var endRange = right[0].range[1]
       right = right[0]
@@ -426,6 +426,9 @@ class Parser {
       left = this.PrimaryExpression();
     }
 
+    if(typeof this._lookahead === "undefined") {
+      return left
+    }
     while (this._lookahead.type === operatorToken) {
       // operator: *, /
       const operator = this._eat(operatorToken).value;
@@ -444,6 +447,7 @@ class Parser {
         parent: null,
       };
     }
+
 
     return left;
   }

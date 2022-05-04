@@ -1,5 +1,6 @@
 import { parseForESLint } from "./index";
 import { parseForESLint  as jsonParse } from 'jsonc-eslint-parser'
+import { getTokens } from "./src/Tokens";
 
 const some_tf_string = `resource "google_compute_ssl_policy" "vulnerable_example" { 
                                 name = "production-ssl-policy"
@@ -122,6 +123,8 @@ resource "google_bigquery_dataset" "dataset" {
 }
 `
 
+const ip = `ip_cidr_range = "10.0.0.0/24"`
+
 // const ast = parse(some_json_string);
 // const ast = parseForESLint(complex_tf_string, {});
 // const jsonAst = jsonParse(json_string)
@@ -130,11 +133,12 @@ resource "google_bigquery_dataset" "dataset" {
 // console.log(jsonAst)
 // console.log(ast)
 
-const ast = parseForESLint(extendingParser1, {});
-
-
+const ast = parseForESLint(ip, {});
 console.log(JSON.stringify(ast, null, 3));
 
+
+// Tokens
+// const tokens = getTokens(terraGoat)
 
 // // Terragoat
 // const goatAst = parseForESLint(terraGoat, {})

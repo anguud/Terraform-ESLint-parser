@@ -1,5 +1,6 @@
 import { parseForESLint } from "terraform-estree-parser";
 
+
 const some_tf_string = `resource "google_compute_ssl_policy" "vulnerable_example" { 
                                 name = "production-ssl-policy"
                                 profile = "MODERN"
@@ -84,15 +85,48 @@ const extendingParser1 = `resource "google_bigquery_dataset" "dataset" {
   }
 }
 `
+const ip = `ip_cidr_range = "10.0.0.0/24"`
 
+const terragoatNetworks = `resource "google_compute_network" "vpc" {
+  name                    = "terragoat--network"
+  description             = "Virtual vulnerable-by-design network"
+  auto_create_subnetworks = false
+}
+
+resource "google_compute_subnetwork" "public-subnetwork" {
+  name          = "terragoat--public-subnetwork"
+  ip_cidr_range = "10.0.0.0/24"
+  region        = var.region
+  network       = google_compute_network.vpc.id
+
+  secondary_ip_range {
+    range_name    = "tf-test-secondary-range-update1"
+    ip_cidr_range = "192.168.10.0/24"
+  }
+}
+
+resource "google_compute_firewall" "allow_all" {
+  name          = "terragoat--firewall"
+  network       = google_compute_network.vpc.id
+  source_ranges = ["0.0.0.0/0"]
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
+  }
+}`
 // Original 
 // const ast = parseForESLint(some_tf_string, {});
 // console.log(JSON.stringify(ast, null, 3));
 // const ast = getTokens(some_tf_string);
 
+// // Terragoat
+// const goatAst = parseForESLint(terraGoat, {})
+// console.log(JSON.stringify(goatAst, null, 3));
+
 // Terragoat
-const goatAst = parseForESLint(terraGoat, {})
-console.log(JSON.stringify(goatAst, null, 3));
+const goatNet = parseForESLint(ip, {})
+console.log(JSON.stringify(goatNet, null, 3));
+
 
 // extend Parser 
 // const extendpaser = parseForESLint(extendingParser, {});
