@@ -469,7 +469,7 @@ class Parser {
       case "(":
         return this.ParentesizedExpression();
       case "{":
-        return this.StatementList("}");
+        return this.StatementList("}", "block");
       default:
         return this.LeftHandSideExpression();
     }

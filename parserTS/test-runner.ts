@@ -123,7 +123,10 @@ resource "google_bigquery_dataset" "dataset" {
 }
 `
 
-const ip = `ip_cidr_range = "10.0.0.0/24"`
+const ip = `resource "google_bigquery_dataset" "dataset" {
+  ip_cidr_range = {"10.0.0.0/24"}
+  test = {"tesxt" "yes"}
+}`
 
 // const ast = parse(some_json_string);
 // const ast = parseForESLint(complex_tf_string, {});
