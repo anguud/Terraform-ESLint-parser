@@ -154,6 +154,104 @@ const ip = `ip_cidr_range = "10.0.0.0/24"`
 const list = `blockRange = {"text" "NewText"}
 listRange = ["listtext"]`
 
+const ourTest = `resource "google_compute_ssl_policy" "vulnerable_example1" { 
+  name = "production-ssl-policy"
+  profile = "COMPATIBLE"
+  min_tls_version = "TLS_1_0"
+}
+
+resource "google_compute_ssl_policy" "vulnerable_example2" { 
+  name = "production-ssl-policy"
+  profile = "MODERN"
+  min_tls_version = "TLS_1_0"
+}
+
+resource "google_compute_ssl_policy" "safe_example" { 
+  name = "production-ssl-policy"
+  profile = "RESTRICTED"
+  min_tls_version = "TLS_1_0"
+}
+
+resource "google_compute_ssl_policy" "best_example" { 
+  name = "production-ssl-policy"
+  profile = "RESTRICTED"
+  min_tls_version = "TLS_1_2"
+}
+
+resource "google_sql_database_instance" "postgres" {
+name                = "postgress-db-instance"
+database_version    = "POSTGRES"
+settings {
+tier = "db-f1-micro"
+ip_configuration {
+authorized_networks {
+    value           = "108.12.12.0/24"
+    name            = "internal"
+}
+authorized_networks {
+    value           = "0.0.0.0/0"
+    name            = "internet"
+} 
+}
+}
+}
+
+
+
+resource "google_compute_region_backend_service" "bad_example" {
+name                            = "logging-test"
+region                          = "us-central1"
+health_checks                   = [google_compute_region_health_check.region.id]
+connection_draining_timeout_sec = 10
+session_affinity                = "CLIENT_IP"
+load_balancing_scheme           = "EXTERNAL"
+protocol                        = "HTTP"
+
+log_config {
+enable = false
+}
+}
+
+resource "google_compute_region_backend_service" "vulnerable_to_educate" {
+name                            = "logging-test"
+region                          = "us-central1"
+health_checks                   = [google_compute_region_health_check.region.id]
+connection_draining_timeout_sec = 10
+session_affinity                = "CLIENT_IP"
+load_balancing_scheme           = "EXTERNAL"
+protocol                        = "HTTPS"
+}
+
+resource "google_compute_region_backend_service" "withlogs" {
+name                            = "logging-test"
+region                          = "us-central1"
+health_checks                   = [google_compute_region_health_check.region.id]
+connection_draining_timeout_sec = 10
+session_affinity                = "CLIENT_IP"
+load_balancing_scheme           = "EXTERNAL"
+protocol                        = "HTTPS"
+
+log_config {
+enable = true
+}
+}
+
+resource "google_bigquery_connection" "vulnerable" {
+provider      = google-beta
+friendly_name = "bigquery-connection"
+description   = "a riveting description"
+cloud_sql {
+instance_id = google_sql_database_instance.instance.connection_name
+database    = google_sql_database.db.name
+type        = "POSTGRES"
+credential {
+username = "name@email.com"
+password = "change-me-later"
+}
+}
+}
+`
+
 // const ast = parse(some_json_string);
 // const ast = parseForESLint(complex_tf_string, {});
 // const jsonAst = jsonParse(json_string)
@@ -162,7 +260,7 @@ listRange = ["listtext"]`
 // console.log(jsonAst)
 // console.log(ast)
 
-const ast = parseForESLint(list, {});
+const ast = parseForESLint(ourTest, {});
 console.log(JSON.stringify(ast, null, 3));
 
 

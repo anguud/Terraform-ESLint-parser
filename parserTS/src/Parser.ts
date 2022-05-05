@@ -121,7 +121,7 @@ class Parser {
 
     const statementList = [this.Statement(config)];
 
-    while ((this._lookahead !== null) && (this._lookahead.type !== stopLookahead) && (config !== "block")) {
+    while (typeof this._lookahead !== "undefined" && this._lookahead !== null && this._lookahead.type !== stopLookahead && config !== "block") {
       statementList.push(this.Statement(config));
     }
 
@@ -499,9 +499,9 @@ class Parser {
       case "(":
         return this.ParentesizedExpression();
       case "{":
-        return this.StatementList("}");
+        return this.StatementList("}", "block");
       case "[":
-        return this.StatementList("]");
+        return this.StatementList("]", "block");
       default:
         return this.LeftHandSideExpression();
     }
