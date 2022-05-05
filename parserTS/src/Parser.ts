@@ -121,7 +121,7 @@ class Parser {
 
     const statementList = [this.Statement(config)];
 
-    while (this._lookahead != null && this._lookahead.type !== stopLookahead && config !== "block") {
+    while (typeof this._lookahead !== "undefined" && this._lookahead !== null && this._lookahead.type !== stopLookahead && config !== "block") {
       statementList.push(this.Statement(config));
     }
 
@@ -143,6 +143,8 @@ class Parser {
           return this.EmptyStatement();
         case "{":
           return this.BlockStatement(config);
+        case "[":
+          return this.listStatement();
         case "resource":
           return this.ResourceBlockStatement();
         default:
@@ -187,6 +189,34 @@ class Parser {
 
     }
   }
+
+  /**
+   * List
+   *  : '{' optStatementList '}'
+   *  ;
+   */
+  listStatement(config: string | null = null) {
+    const listStart = this._eat("[");
+
+    if (this._lookahead != null) {
+      const body = this._lookahead.type !== "]" ? this.StatementList("]") : [];
+
+      const listEndToken = this._eat("]");
+
+      return {
+        type: "listStatement",
+        body,
+        loc: {
+          start: listStart.loc.start,
+          end: listEndToken.loc.end,
+        },
+        range: [listStart.range[0], listEndToken.range[1]],
+        parent: null,
+      };
+
+    }
+  }
+
 
   /**
    * ResourceBlockStatement
@@ -426,7 +456,7 @@ class Parser {
       left = this.PrimaryExpression();
     }
 
-    if(typeof this._lookahead === "undefined") {
+    if (typeof this._lookahead === "undefined") {
       return left
     }
     while (this._lookahead.type === operatorToken) {
@@ -470,6 +500,8 @@ class Parser {
         return this.ParentesizedExpression();
       case "{":
         return this.StatementList("}", "block");
+      case "[":
+        return this.StatementList("]", "block");
       default:
         return this.LeftHandSideExpression();
     }
@@ -549,7 +581,8 @@ class Parser {
 
     if (token.type !== tokenType) {
       throw new SyntaxError(
-        `Unexpected token: "${token.value}", expected: "${tokenType}"`
+        `Unexpected token: "${token.value}", expected: "${tokenType}\n
+        in node: ${token.range}"`
       );
     }
 
