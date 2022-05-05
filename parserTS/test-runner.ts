@@ -27,44 +27,6 @@ const emptyString = `;`
 
 const test_string = `{ resource "name" "name2"}`;
 
-const js_string = `
-const testRule = {
-    create(_context: any) {
-      return {
-        Identifier(node: any) {
-          console.log(node);
-          _context.report(node, 'This is unexpected!');
-        }
-      };
-    },
-  }
-
-;
-
-export {testRule}`
-
-const json_string = `{
-  "glossary": {
-      "title": "example glossary",
-  "GlossDiv": {
-          "title": "S",
-    "GlossList": {
-              "GlossEntry": {
-                  "ID": "SGML",
-        "SortAs": "SGML",
-        "GlossTerm": "Standard Generalized Markup Language",
-        "Acronym": "SGML",
-        "Abbrev": "ISO 8879:1986",
-        "GlossDef": {
-                      "para": "A meta-markup language, used to create markup languages such as DocBook.",
-          "GlossSeeAlso": ["GML", "XML"]
-                  },
-        "GlossSee": "markup"
-              }
-          }
-      }
-  }
-}`
 
 const extendingParser1 = `resource "google_bigquery_dataset" "dataset" {
   dataset_id = "terragoat__dataset"
@@ -260,7 +222,7 @@ password = "change-me-later"
 // console.log(jsonAst)
 // console.log(ast)
 
-const ast = parseForESLint(ourTest, {});
+const ast = parseForESLint(extendingParser1, {});
 console.log(JSON.stringify(ast, null, 3));
 
 
