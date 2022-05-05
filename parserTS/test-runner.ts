@@ -1,5 +1,5 @@
 import { parseForESLint } from "./index";
-import { parseForESLint  as jsonParse } from 'jsonc-eslint-parser'
+import { parseForESLint as jsonParse } from 'jsonc-eslint-parser'
 import { getTokens } from "./src/Tokens";
 
 const some_tf_string = `resource "google_compute_ssl_policy" "vulnerable_example" { 
@@ -9,8 +9,8 @@ const some_tf_string = `resource "google_compute_ssl_policy" "vulnerable_example
                             }
                         `;
 
-const complex_tf_string = 
-                        `resource "google_compute_ssl_policy" "vulnerable_example" {
+const complex_tf_string =
+  `resource "google_compute_ssl_policy" "vulnerable_example" {
                           name = "production-ssl-policy"
                             profile = "MODERN"
                             min_tls_version = "TLS_1_0"
@@ -123,7 +123,36 @@ resource "google_bigquery_dataset" "dataset" {
 }
 `
 
+const terragoatNetworks = `resource "google_compute_network" "vpc" {
+  name                    = "terragoat--network"
+  description             = "Virtual vulnerable-by-design network"
+  auto_create_subnetworks = false
+}
+
+resource "google_compute_subnetwork" "public-subnetwork" {
+  name          = "terragoat--public-subnetwork"
+  ip_cidr_range = "10.0.0.0/24"
+
+
+  secondary_ip_range {
+    range_name    = "tf-test-secondary-range-update1"
+    ip_cidr_range = "192.168.10.0/24"
+  }
+}
+
+resource "google_compute_firewall" "allow_all" {
+  name          = "terragoat--firewall"
+
+  source_ranges = ["0.0.0.0/0"]
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
+  }
+}`
+
 const ip = `ip_cidr_range = "10.0.0.0/24"`
+const list = `blockRange = {"text" "NewText"}
+listRange = ["listtext"]`
 
 // const ast = parse(some_json_string);
 // const ast = parseForESLint(complex_tf_string, {});
@@ -133,7 +162,7 @@ const ip = `ip_cidr_range = "10.0.0.0/24"`
 // console.log(jsonAst)
 // console.log(ast)
 
-const ast = parseForESLint(ip, {});
+const ast = parseForESLint(list, {});
 console.log(JSON.stringify(ast, null, 3));
 
 

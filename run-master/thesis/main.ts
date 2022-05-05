@@ -124,7 +124,7 @@ resource "google_compute_firewall" "allow_all" {
 // console.log(JSON.stringify(goatAst, null, 3));
 
 // Terragoat
-const goatNet = parseForESLint(ip, {})
+const goatNet = parseForESLint(terragoatNetworks, {})
 console.log(JSON.stringify(goatNet, null, 3));
 
 
