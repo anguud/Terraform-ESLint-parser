@@ -123,14 +123,14 @@ resource "google_compute_firewall" "allow_all" {
 // const goatAst = parseForESLint(terraGoat, {})
 // console.log(JSON.stringify(goatAst, null, 3));
 
-// Terragoat
-const goatNet = parseForESLint(terragoatNetworks, {})
-console.log(JSON.stringify(goatNet, null, 3));
+// // Terragoat
+// const goatNet = parseForESLint(terragoatNetworks, {})
+// console.log(JSON.stringify(goatNet, null, 3));
 
 
 // extend Parser 
-// const extendpaser = parseForESLint(extendingParser, {});
-// console.log(JSON.stringify(extendpaser, null, 3));
+const extendpaser = parseForESLint(extendingParser, {});
+console.log(JSON.stringify(extendpaser, null, 3));
 
 // // extend Parser1
 // const extendpaser = parseForESLint(extendingParser1, {});

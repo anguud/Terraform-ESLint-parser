@@ -25,6 +25,9 @@ var Spec = [
     [/^\(/, "("],
     [/^\)/, ")"],
     [/^\,/, ","],
+    [/^\./, "."],
+    [/^\[/, "["],
+    [/^\]/, "]"],
     // ----------------
     //Numbers:
     // Numbers should be before identifiers
@@ -35,14 +38,14 @@ var Spec = [
     [/^resource/, "resource"],
     // ----------------
     // Identifiers:
-    [/^\w+/, "Identifier"],
+    [/^\w+[(\w\-]+/, "Identifier"],
     // ----------------
     // Assignment operators =, *=, /=, +=, -=,
     [/^=/, "SIMPLE_ASSIGN"],
     [/^[\*\/\+\-]=/, "COMPLESX_ASSIGN"],
     // ----------------
     // Math operators: +, -, * /
-    [/^[+\-]/, "ADDITIVE_OPERATOR"],
+    [/^[+-]/, "ADDITIVE_OPERATOR"],
     // TODO: parser does not support multiplication over division.
     [/^[*\/]/, "MULTIPLICATIVE_OPERATOR"],
     // ----------------

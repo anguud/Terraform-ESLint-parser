@@ -123,7 +123,7 @@ var Parser = /** @class */ (function () {
         if (stopLookahead === void 0) { stopLookahead = null; }
         if (config === void 0) { config = null; }
         var statementList = [this.Statement(config)];
-        while (this._lookahead != null && this._lookahead.type !== stopLookahead && config !== "block") {
+        while (typeof this._lookahead !== "undefined" && this._lookahead !== null && this._lookahead.type !== stopLookahead && config !== "block") {
             statementList.push(this.Statement(config));
         }
         return statementList;
@@ -144,6 +144,8 @@ var Parser = /** @class */ (function () {
                     return this.EmptyStatement();
                 case "{":
                     return this.BlockStatement(config);
+                case "[":
+                    return this.listStatement();
                 case "resource":
                     return this.ResourceBlockStatement();
                 default:
@@ -179,6 +181,29 @@ var Parser = /** @class */ (function () {
                     end: blockEndToken.loc.end,
                 },
                 range: [blockStart.range[0], blockEndToken.range[1]],
+                parent: null,
+            };
+        }
+    };
+    /**
+     * List
+     *  : '{' optStatementList '}'
+     *  ;
+     */
+    Parser.prototype.listStatement = function (config) {
+        if (config === void 0) { config = null; }
+        var listStart = this._eat("[");
+        if (this._lookahead != null) {
+            var body = this._lookahead.type !== "]" ? this.StatementList("]") : [];
+            var listEndToken = this._eat("]");
+            return {
+                type: "listStatement",
+                body: body,
+                loc: {
+                    start: listStart.loc.start,
+                    end: listEndToken.loc.end,
+                },
+                range: [listStart.range[0], listEndToken.range[1]],
                 parent: null,
             };
         }
@@ -238,7 +263,7 @@ var Parser = /** @class */ (function () {
      */
     Parser.prototype.AssignmentExpression = function () {
         var left = this.AdditiveExpression();
-        if (!this._isAssignmentOperator(this._lookahead.type)) {
+        if ((typeof this._lookahead === "undefined") || (!this._isAssignmentOperator(this._lookahead.type))) {
             return left;
         }
         var operator = this.AssignmentOperator();
@@ -381,6 +406,9 @@ var Parser = /** @class */ (function () {
         else {
             left = this.PrimaryExpression();
         }
+        if (typeof this._lookahead === "undefined") {
+            return left;
+        }
         while (this._lookahead.type === operatorToken) {
             // operator: *, /
             var operator = this._eat(operatorToken).value;
@@ -396,6 +424,10 @@ var Parser = /** @class */ (function () {
                 operator: operator,
                 left: left,
                 right: right,
+                loc: {
+                    start: left.loc.start,
+                    end: right.loc.start
+                },
                 parent: null,
             };
         }
@@ -417,7 +449,9 @@ var Parser = /** @class */ (function () {
             case "(":
                 return this.ParentesizedExpression();
             case "{":
-                return this.StatementList("}");
+                return this.StatementList("}", "block");
+            case "[":
+                return this.StatementList("]", "block");
             default:
                 return this.LeftHandSideExpression();
         }
@@ -488,7 +522,7 @@ var Parser = /** @class */ (function () {
             throw new SyntaxError("Unexpected end of input, expected \"".concat(tokenType, "\""));
         }
         if (token.type !== tokenType) {
-            throw new SyntaxError("Unexpected token: \"".concat(token.value, "\", expected: \"").concat(tokenType, "\""));
+            throw new SyntaxError("Unexpected token: \"".concat(token.value, "\", expected: \"").concat(tokenType, "\n\n        in node: ").concat(token.range, "\""));
         }
         this._lookahead = this.getNextToken();
         return token;

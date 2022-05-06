@@ -474,6 +474,10 @@ class Parser {
         operator,
         left,
         right,
+        loc: {
+          start: left.loc.start, 
+          end: right.loc.start
+        },
         parent: null,
       };
     }

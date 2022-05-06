@@ -49,7 +49,7 @@ const Spec: [RegExp, string | null][] = [
     // ----------------
     // Identifiers:
 
-    [/^\w+/, "Identifier"],
+    [/^\w+[(\w\-]+/, "Identifier"],
 
     // ----------------
     // Assignment operators =, *=, /=, +=, -=,
