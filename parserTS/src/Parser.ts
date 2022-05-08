@@ -1,37 +1,39 @@
 import { getTokens } from "./Tokens";
-import { Token, Statement, Assignment } from "./types";
+import *  as types from "./types";
 import { SourceCode } from 'eslint';
+import { unionWith } from "eslint-visitor-keys"
+import { endianness } from "os";
 
-export function parse(code, options) {
+export function parseForESLint(code: string, options: any,) {
 
 
-  let visitorKeys: SourceCode.VisitorKeys = {
-      'Program': [],
-      'BlockStatement': ['body'],
-      'ResourceBlockStatement': ['body', 'blocklabel', 'blocklabel2'],
-      'ExpressionStatement': [],
-      'AssignmentExpression': ['operator', 'left', 'right'],
-      'Identifier': ['name'],
-      'BinaryExpression': ['operator', 'left', 'right' ],
-      'StringLiteral': ['value'],
-      'NumericLiteral': ['value']
+  const visitorKeys: SourceCode.VisitorKeys = {
+    Program: [],
+    BlockStatement: ['body'],
+    ResourceBlockStatement: ['body', 'blocklabel', 'blocklabel2'],
+    ExpressionStatement: [],
+    AssignmentExpression: ['operator', 'left', 'right'],
+    Identifier: ['name'],
+    BinaryExpression: ['operator', 'left', 'right'],
+    StringLiteral: ['value'],
+    NumericLiteral: ['value']
   };
 
-  let pars = new Parser()
+  const pars = new Parser()
 
 
   return {
     ast: pars.parse(code),
     services: {},
-    visitorKeys: visitorKeys
+    visitorKeys: unionWith(visitorKeys)
   }
 }
 
 class Parser {
   _cursor: number;
   _string: string;
-  _tokens: Token[];
-  _lookahead: Token; //
+  _tokens: types.Token[];
+  _lookahead: types.Token; //
 
   init(string: string) {
     this._cursor = -1;
@@ -49,7 +51,7 @@ class Parser {
     return this.Program();
   }
 
-  getNextToken(): Token {
+  getNextToken(): types.Token {
     return this._tokens[++this._cursor];
   }
 
@@ -64,12 +66,13 @@ class Parser {
    *  : StatementList
    *  ;
    */
-  Program(): Statement {
+  Program(): types.Program {
     const statementList = this.StatementList("initial");
     if (statementList !== null) {
       return {
         type: "Program",
         body: statementList,
+        tokens: this._tokens,
         loc: {
           start: { ...statementList[0].loc.start },
           end: { ...statementList[statementList.length - 1].loc.end },
@@ -78,19 +81,22 @@ class Parser {
           statementList[0].range[0],
           statementList[statementList.length - 1].range[1],
         ],
+        comments: [],
         parent: null,
       };
     } else {
       return {
         type: "Program",
         body: statementList,
+        tokens: this._tokens,
         loc: {
-          start: { 
+          start: {
             line: 0,
             column: 0,
             offset: 0
-           },
-          end: { line: 0,
+          },
+          end: {
+            line: 0,
             column: 0,
             offset: 0
           },
@@ -99,6 +105,7 @@ class Parser {
           0,
           0,
         ],
+        comments: [],
         parent: null,
       };
     }
@@ -114,7 +121,7 @@ class Parser {
 
     const statementList = [this.Statement(config)];
 
-    while (this._lookahead != null && this._lookahead.type !== stopLookahead && config !== "block") {
+    while (typeof this._lookahead !== "undefined" && this._lookahead !== null && this._lookahead.type !== stopLookahead && config !== "block") {
       statementList.push(this.Statement(config));
     }
 
@@ -129,13 +136,15 @@ class Parser {
    *  ;F
    *
    */
-  Statement(config: string | null= null) {
+  Statement(config: string | null = null) {
     if (this._lookahead != null) {
       switch (this._lookahead.type) {
         case ";":
           return this.EmptyStatement();
         case "{":
           return this.BlockStatement(config);
+        case "[":
+          return this.listStatement();
         case "resource":
           return this.ResourceBlockStatement();
         default:
@@ -160,7 +169,7 @@ class Parser {
    *  ;
    */
   BlockStatement(config: string | null = null) {
-    const blockStart = this._eat("{");  
+    const blockStart = this._eat("{");
 
     if (this._lookahead != null) {
       const body = this._lookahead.type !== "}" ? this.StatementList("}") : [];
@@ -175,10 +184,39 @@ class Parser {
           end: blockEndToken.loc.end,
         },
         range: [blockStart.range[0], blockEndToken.range[1]],
+        parent: null,
       };
-    
+
     }
   }
+
+  /**
+   * List
+   *  : '{' optStatementList '}'
+   *  ;
+   */
+  listStatement(config: string | null = null) {
+    const listStart = this._eat("[");
+
+    if (this._lookahead != null) {
+      const body = this._lookahead.type !== "]" ? this.StatementList("]") : [];
+
+      const listEndToken = this._eat("]");
+
+      return {
+        type: "listStatement",
+        body,
+        loc: {
+          start: listStart.loc.start,
+          end: listEndToken.loc.end,
+        },
+        range: [listStart.range[0], listEndToken.range[1]],
+        parent: null,
+      };
+
+    }
+  }
+
 
   /**
    * ResourceBlockStatement
@@ -212,7 +250,7 @@ class Parser {
     }
   }
 
-  
+
 
   /**
    * ExpressionStatement
@@ -228,7 +266,7 @@ class Parser {
       ...expression,
     };
   }
-  
+
 
   /**
    * Expression
@@ -247,21 +285,33 @@ class Parser {
    *  ;
    * @returns
    */
-  AssignmentExpression(): Assignment {
+  AssignmentExpression(): types.Assignment | types.Statement {
     const left = this.AdditiveExpression();
-    if (!this._isAssignmentOperator(this._lookahead.type)) {
+    if ((typeof this._lookahead === "undefined") || (!this._isAssignmentOperator(this._lookahead.type))) {
       return left;
     }
 
     const operator = this.AssignmentOperator();
-    // TODO: maybe we should handle edgecases such as: 'this = that = not_Handled' where parser would probalby crash if this happens.
+    var right = this.AssignmentExpression()
+
+    if (typeof right.loc === "undefined") {
+      var endLoc = right[0].loc.end
+      var endRange = right[0].range[1]
+      right = right[0]
+    } else {
+      var endLoc = right.loc.end
+      var endRange = right.range[1]
+    }
     return {
       type: "AssignmentExpression",
       operator: operator.value,
       left: this._chekValidAssignmentTarget(left),
-      right: this.AssignmentExpression(),
-      loc: operator.loc,
-      range: operator.range,
+      right: right,
+      loc: {
+        start: left.loc.start,
+        end: endLoc
+      },
+      range: [left.range[0], endRange],
       parent: null,
     };
   }
@@ -282,18 +332,38 @@ class Parser {
    */
   Identifier() {
     const name = this._eat("Identifier");
-    return {
-      type: "Identifier",
-      name: name.value,
-      loc: name.loc,
-      range: name.range,
-    };
+    if (this._lookahead.type !== "{") {
+      return {
+        type: "Identifier",
+        name: name.value,
+        loc: name.loc,
+        range: name.range,
+        parent: null,
+      };
+    }
+
+    if (this._lookahead !== null) {
+      const body = this.StatementList("}", "block");
+
+      return {
+        type: "TFBlock",
+        name: name.value,
+        body: body[0].body,
+        loc: {
+          start: name.loc.start,
+          end: body[0].loc.end,
+        },
+        range: [name.range[0], body[0].range[1]],
+        parent: null,
+      }
+
+    }
   }
 
   /**
    * Extra check whether it's valid assignment target.
    */
-  _chekValidAssignmentTarget(node: Statement) {
+  _chekValidAssignmentTarget(node: types.Statement) {
     if (node.type === "Identifier") {
       return node;
     }
@@ -308,7 +378,7 @@ class Parser {
     return tokenType === "SIMPLE_ASSIGN" || tokenType === "COMPLEX_ASSIGN";
   }
 
-  /**
+  /** 
    * AssignmentOperator
    *   : SIMPLE_ASSIGN
    *   | COMPLEX_ASSIGN
@@ -352,7 +422,7 @@ class Parser {
       "ADDITIVE_OPERATOR"
     );
   }
-  
+
   /**
    * MultiplicativeExpression
    *   : PrimaryExpression
@@ -367,8 +437,8 @@ class Parser {
   }
 
 
-   // eslint-disable-next-line @typescript-eslint/ban-types
-   exp: {[K: string] : Function } = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  exp: { [K: string]: Function } = {
     MultiplicativeExpression: this.MultiplicativeExpression,
     PrimaryExpression: this.PrimaryExpression,
   };
@@ -380,17 +450,20 @@ class Parser {
    */
   _BinaryExpression(builderName: string, operatorToken: string) {
     let left: any;
-    if (builderName === "MultiplicativeExpression" ) { 
+    if (builderName === "MultiplicativeExpression") {
       left = this.MultiplicativeExpression()
     } else {
       left = this.PrimaryExpression();
     }
 
+    if (typeof this._lookahead === "undefined") {
+      return left
+    }
     while (this._lookahead.type === operatorToken) {
       // operator: *, /
       const operator = this._eat(operatorToken).value;
       let right: any;
-      if (builderName === "MultiplicativeExpression" ) { 
+      if (builderName === "MultiplicativeExpression") {
         right = this.MultiplicativeExpression()
       } else {
         right = this.PrimaryExpression();
@@ -401,8 +474,14 @@ class Parser {
         operator,
         left,
         right,
+        loc: {
+          start: left.loc.start, 
+          end: right.loc.start
+        },
+        parent: null,
       };
     }
+
 
     return left;
   }
@@ -423,6 +502,10 @@ class Parser {
     switch (this._lookahead.type) {
       case "(":
         return this.ParentesizedExpression();
+      case "{":
+        return this.StatementList("}", "block");
+      case "[":
+        return this.StatementList("]", "block");
       default:
         return this.LeftHandSideExpression();
     }
@@ -453,7 +536,7 @@ class Parser {
    *  :STRING
    *  ;
    */
-  StringLiteral(): Token {
+  StringLiteral(): types.Token {
     const token = this._eat("STRING");
     return {
       type: "StringLiteral",
@@ -476,6 +559,7 @@ class Parser {
       value: Number(token.value),
       loc: token.loc,
       range: token.range,
+      parent: null,
     };
   }
 
@@ -501,7 +585,8 @@ class Parser {
 
     if (token.type !== tokenType) {
       throw new SyntaxError(
-        `Unexpected token: "${token.value}", expected: "${tokenType}"`
+        `Unexpected token: "${token.value}", expected: "${tokenType}\n
+        in node: ${token.range}"`
       );
     }
 
