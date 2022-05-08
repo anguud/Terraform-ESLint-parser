@@ -45,7 +45,7 @@ var Spec = [
     [/^[\*\/\+\-]=/, "COMPLESX_ASSIGN"],
     // ----------------
     // Math operators: +, -, * /
-    [/^[+-]/, "ADDITIVE_OPERATOR"],
+    [/^[+\-]/, "ADDITIVE_OPERATOR"],
     // TODO: parser does not support multiplication over division.
     [/^[*\/]/, "MULTIPLICATIVE_OPERATOR"],
     // ----------------
