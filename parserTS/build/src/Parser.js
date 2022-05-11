@@ -387,7 +387,7 @@ var Parser = /** @class */ (function () {
             var body = this.StatementList("}", "block");
             return {
                 type: "TFBlock",
-                name: name.value,
+                name: name,
                 body: body[0].body,
                 loc: {
                     start: name.loc.start,
