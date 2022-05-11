@@ -47,6 +47,21 @@ const Spec: [RegExp, string | null][] = [
     [/^resource/, "resource"],
 
     // ----------------
+    // provider
+
+    [/^provider/, "provider"],
+
+    // ----------------
+    // variable
+
+    [/^variable/, "variable"],
+
+    // ----------------
+    // variable
+
+    [/^var/, "var"],
+
+    // ----------------
     // Identifiers:
 
     [/^\w+[(\w\-]+/, "Identifier"],

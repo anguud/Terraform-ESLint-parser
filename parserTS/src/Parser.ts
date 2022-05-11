@@ -34,6 +34,7 @@ class Parser {
   _string: string;
   _tokens: types.Token[];
   _lookahead: types.Token; //
+  _insideBlock: boolean;
 
   init(string: string) {
     this._cursor = -1;
@@ -147,6 +148,14 @@ class Parser {
           return this.listStatement();
         case "resource":
           return this.ResourceBlockStatement();
+        case "provider":
+          if(this._tokens[this._cursor+1].type === "STRING"){
+          return this.ProviderBlock();
+          } else {
+            return this.ExpressionStatement();
+          }
+        case "variable":
+          return this.variableBlock();
         default:
           return this.ExpressionStatement();
       }
@@ -251,6 +260,65 @@ class Parser {
   }
 
 
+  /**
+   * ResourceBlockStatement
+   *  : 'Resource StringLiteral StringLiteral{' optStatementList '}'
+   *  ;
+   */
+   variableBlock() {
+    const variableToken = this._eat("variable");
+    // TODO: use return from _eat to parse to StringLiteral(_eat retrurn value ) in order to make a new node type for blocklables.
+    if (this._lookahead != null) {
+      const variableName =
+        this._lookahead.type == "STRING" ? this.StringLiteral() : []; // if false: this is where we could handle "wrong"
+
+      const body = this._lookahead.type !== "}" ? this.StatementList("}", "block") : [];
+
+      return {
+        type: "VariableBlock",
+        variableName,
+        body: body[0].body,
+        loc: {
+          start: variableToken.loc.start,
+          end: body[0].loc.end,
+        },
+        range: [variableToken.range[0], body[0].range[1]],
+        parent: null,
+      };
+    }
+  }
+
+
+
+  /**
+   * ResourceBlockStatement
+   *  : 'Resource StringLiteral StringLiteral{' optStatementList '}'
+   *  ;
+   */
+   ProviderBlock() {
+    const providerToken = this._eat("provider");
+    // TODO: use return from _eat to parse to StringLiteral(_eat retrurn value ) in order to make a new node type for blocklables.
+    if (this._lookahead != null) {
+      const providerName =
+        this._lookahead.type == "STRING" ? this.StringLiteral() : []; // if false: this is where we could handle "wrong"
+
+      const body = this._lookahead.type !== "}" ? this.StatementList("}", "block") : [];
+
+      return {
+        type: "ProviderBlock",
+        providerName,
+        body: body[0].body,
+        loc: {
+          start: providerToken.loc.start,
+          end: body[0].loc.end,
+        },
+        range: [providerToken.range[0], body[0].range[1]],
+        parent: null,
+      };
+    }
+  }
+
+
 
   /**
    * ExpressionStatement
@@ -331,7 +399,17 @@ class Parser {
    * @returns
    */
   Identifier() {
-    const name = this._eat("Identifier");
+    if (this._tokens[this._cursor].type === "var" && this._tokens[this._cursor+1].type === "."){
+      return this.VariableReference();
+    } 
+    if (this._tokens[this._cursor+1].type === ".") {
+      return this.Reference()
+    }
+    if (this._tokens[this._cursor].type === "provider"){
+      var name = this._eat("provider");
+    } else {
+      var name = this._eat("Identifier");
+    }
     if (this._lookahead.type !== "{") {
       return {
         type: "Identifier",
@@ -478,6 +556,7 @@ class Parser {
           start: left.loc.start, 
           end: right.loc.start
         },
+        range: [left.range[0], right.range[1]],
         parent: null,
       };
     }
@@ -585,8 +664,8 @@ class Parser {
 
     if (token.type !== tokenType) {
       throw new SyntaxError(
-        `Unexpected token: "${token.value}", expected: "${tokenType}\n
-        in node: ${token.range}"`
+        `Unexpected token: "${token.value}", expected: "${tokenType}"\n
+        in range: ${token.range}`
       );
     }
 
@@ -594,4 +673,46 @@ class Parser {
 
     return token;
   }
+
+  VariableReference() {
+    const startRef = this._eat("var");
+    this._eat(".");
+    const varName = this._eat("Identifier")
+    this._eat(".");
+    const varArguemnt = this._eat("Identifier")
+    
+      return {
+        type: "variable",
+        varName: varName,
+        varArguemnt: varArguemnt,
+        loc: {
+          start: startRef.loc.start,
+          end: varArguemnt.loc.end,
+        },
+        range: [startRef.range[0], varArguemnt.range[1]],
+        parent: null,
+      };
+  }
+  
+  Reference() {
+    const resouceName = this._eat("Identifier");
+    this._eat(".")
+    const terraformName = this._eat("Identifier");
+    this._eat(".")
+    const blockIdentifier = this._eat("Identifier")
+      return {
+        type: "reference",
+        ressouceName: resouceName,
+        terraformName: terraformName,
+        blockIdentifier: blockIdentifier,
+        loc: {
+          start: resouceName.loc.start,
+          end: blockIdentifier.loc.end,
+        },
+        range: [resouceName.range[0], blockIdentifier.range[1]],
+        parent: null,
+      };
+  }
+  //google_compute_network.vpc.id
+
 }
