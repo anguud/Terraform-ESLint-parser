@@ -425,7 +425,7 @@ class Parser {
 
       return {
         type: "TFBlock",
-        name: name.value,
+        name: name,
         body: body[0].body,
         loc: {
           start: name.loc.start,
