@@ -601,17 +601,14 @@ var Parser = /** @class */ (function () {
         var startRef = this._eat("var");
         this._eat(".");
         var varName = this._eat("Identifier");
-        this._eat(".");
-        var varArguemnt = this._eat("Identifier");
         return {
             type: "variable",
             varName: varName,
-            varArguemnt: varArguemnt,
             loc: {
                 start: startRef.loc.start,
-                end: varArguemnt.loc.end,
+                end: varName.loc.end,
             },
-            range: [startRef.range[0], varArguemnt.range[1]],
+            range: [startRef.range[0], varName.range[1]],
             parent: null,
         };
     };
