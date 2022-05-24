@@ -46,3 +46,8 @@ This ensures that the parser is only used on Terraform files (`.tf`)
 
 Note that in the above example configuration the rules plugin mentioned above has been used. 
 
+## IDE extension 
+
+It is highly recomended to use this plugin with the VS Code extension ESLint. This can be found on https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+FOr this to work the Terraform extension has to be installed and enabled aswell.
+Finally in the ESLint extension setting add `terraform` to the array of languages IDs for which the extension should be applied.
