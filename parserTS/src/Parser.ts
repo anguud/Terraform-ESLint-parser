@@ -16,7 +16,8 @@ export function parseForESLint(code: string, options: any,) {
     Identifier: ['name'],
     BinaryExpression: ['operator', 'left', 'right'],
     StringLiteral: ['value'],
-    NumericLiteral: ['value']
+    NumericLiteral: ['value'],
+    // TODO: add missing tokentypes TFBlock, variable, VariableBlock, reference
   };
 
   const pars = new Parser()
