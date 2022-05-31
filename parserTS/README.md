@@ -35,7 +35,7 @@ For Eslint to work inside the VS Code IDE the following needs to be installed:
 **NB:** This parser is mean to be used with the set of rules that can be found in another repo: https://github.com/anguud/eslint-plugin-terraform-rules
 
 As this is not package is not published, installation through yarn or npm is not possible. 
-Instead to include this `terraform-ESLint-parser`package in a project it should be cloned or downloaded and added to the dependencies inside the `package.json` manually. 
+Instead to include this `terraform-ESLint-parser` package in a project it should be cloned or downloaded and added to the dependencies inside the `package.json` manually. 
 
 Fist clone this repo to you local machine 
 Then add the path for this repo to the dependencies in your `package.json` file 
