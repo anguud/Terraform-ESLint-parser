@@ -360,7 +360,13 @@ resource "google_bigquery_dataset" "dataset" {
 
 `
 
-const ast = parseForESLint(varandprovider, {});
+const test = `resource "google_compute_ssl_policy" "example_policy" {
+  name = "my-ssl-policy"
+  min_tls_version = "TLS_1_2"
+}`
+
+const ast = parseForESLint(test, {});
+
 console.log(JSON.stringify(ast, null, 3));
 
 

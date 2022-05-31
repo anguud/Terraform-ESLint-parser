@@ -75,7 +75,7 @@ const Spec: [RegExp, string | null][] = [
     // ----------------
     // Math operators: +, -, * /
     [/^[+\-]/, "ADDITIVE_OPERATOR"],
-    // TODO: parser does not support multiplication over division.
+    // parser does not support multiplication over division.
     [/^[*\/]/, "MULTIPLICATIVE_OPERATOR"],
 
     // ----------------
@@ -85,34 +85,6 @@ const Spec: [RegExp, string | null][] = [
     [/^'[^']*'/, "STRING"],
 ];
 
-/**
- * TODO:
- *
- * map token to type: token value, tokentype just as in tokenizer -- imported tokenizer Spec
- *
- *
- * tokenize method:
- *  variables:
- *
- *  offset integer
- *  lineNumber integer
- *  columnNumber integer
- *
- *  nextline bool
- *
- *  tokens empty array
- *
- *  helper methods:
- *
- *  makeToken()
- *      retunrns the node object as defined in definition of nodes above
- *
- *  getNextToken()
- *      returns next token
- *
- *  getLocation()
- *      returns the location (lineNumber, colNumber (offset))
- */
 
 export function getTokens(code: string) {
     // starting point:

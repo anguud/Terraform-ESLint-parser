@@ -17,7 +17,6 @@ export function parseForESLint(code: string, options: any,) {
     BinaryExpression: ['operator', 'left', 'right'],
     StringLiteral: ['value'],
     NumericLiteral: ['value'],
-    // TODO: add missing tokentypes TFBlock, variable, VariableBlock, reference
   };
 
   const pars = new Parser()
@@ -235,7 +234,7 @@ class Parser {
    */
   ResourceBlockStatement() {
     const resourceToken = this._eat("resource");
-    // TODO: use return from _eat to parse to StringLiteral(_eat retrurn value ) in order to make a new node type for blocklables.
+    
     if (this._lookahead != null) {
       const blocklabel =
         this._lookahead.type == "STRING" ? this.StringLiteral() : []; // if false: this is where we could handle "wrong"
@@ -262,13 +261,12 @@ class Parser {
 
 
   /**
-   * ResourceBlockStatement
-   *  : 'Resource StringLiteral StringLiteral{' optStatementList '}'
+   * 
    *  ;
    */
    variableBlock() {
     const variableToken = this._eat("variable");
-    // TODO: use return from _eat to parse to StringLiteral(_eat retrurn value ) in order to make a new node type for blocklables.
+    
     if (this._lookahead != null) {
       const variableName =
         this._lookahead.type == "STRING" ? this.StringLiteral() : []; // if false: this is where we could handle "wrong"
@@ -293,12 +291,12 @@ class Parser {
 
   /**
    * ResourceBlockStatement
-   *  : 'Resource StringLiteral StringLiteral{' optStatementList '}'
+   *  : 'provider StringLiteral {' optStatementList '}'
    *  ;
    */
    ProviderBlock() {
     const providerToken = this._eat("provider");
-    // TODO: use return from _eat to parse to StringLiteral(_eat retrurn value ) in order to make a new node type for blocklables.
+    
     if (this._lookahead != null) {
       const providerName =
         this._lookahead.type == "STRING" ? this.StringLiteral() : []; // if false: this is where we could handle "wrong"
@@ -492,7 +490,7 @@ class Parser {
   /**
    * AdditiveExpression
    *   : MultiplicativeExpression
-   *   | AdditiveEcpression ADDITIVE_OPERATOR MiltiplicativeExpression -> MultiplicativeExpression ADDITIVE_OPERATOR MultiplivativeExpression
+   *   | AdditiveExpression ADDITIVE_OPERATOR MiltiplicativeExpression -> MultiplicativeExpression ADDITIVE_OPERATOR MultiplivativeExpression
    * @returns
    */
   AdditiveExpression() {
@@ -516,7 +514,7 @@ class Parser {
   }
 
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
+
   exp: { [K: string]: Function } = {
     MultiplicativeExpression: this.MultiplicativeExpression,
     PrimaryExpression: this.PrimaryExpression,
@@ -711,6 +709,6 @@ class Parser {
         parent: null,
       };
   }
-  //google_compute_network.vpc.id
+  
 
 }
