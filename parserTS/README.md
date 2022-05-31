@@ -5,6 +5,25 @@ Parser for parsing Terraforms HCL syntaxr to ESlint's ESTree format
 This project was written as part of a master thesis at the IT University of Copenhagen.
 This should be considered a work in progress and is not meant for commercial use.
 
+# When cloning the repo
+
+Make sure that this project and the rules repo are in the same folder
+Rule repo: https://github.com/anguud/eslint-plugin-terraform-rules
+
+Folder structure:
+
+    .
+    ├── Terraform_ESLint-parser       # This project 
+    └── eslint-plugin-terraform-rules # Rule repo
+
+run command: `npm run build`  inside this directory. 
+
+For Eslint to work inside the VS Code IDE the following needs to be installed: 
+- Node.js `>=14.17.0`
+- ESLint `>=8`
+- Terraform extension for Visual Studio Code
+- ESLint extension for Visual Studio Code (and configuration see last section of this Readme)
+
 
 # Installation
 
